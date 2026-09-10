@@ -1,0 +1,1810 @@
+{
+  "file_type": "maintenance_tasks",
+  "schema_version": "1.2.0",
+  "records": [
+    {
+      "id": "task_f7c6d3aa-eb47-48e3-b6ca-773a883c9f00",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Change main-engine oil and filter",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 200,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Warm engine, shut down, drain crankcase, replace lube-oil filter, refill, start and check for leaks, then stop and recheck level.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "oil",
+        "filter"
+      ],
+      "notes": "LP668 manual: every 200 operating hours; chart footnote calls for annual maintenance when the hour level is not reached. 668-series lube-oil capacity is 18 qt / 17.0 L. Above 32°F (0°C): SAE 30W single-grade or SAE 15W-40 multigrade; -10°F to 32°F: SAE 10W or 10W-30; below -10°F: SAE 5W or 5W-20. Manual says no crankcase additives or flushing oil."
+    },
+    {
+      "id": "task_2f5f6d74-f295-414b-865c-6d9efeb8af08",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Inspect main-engine air cleaner",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 100,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Inspect element and intake connection. Keep dirt out of the intake; do not run the engine with the cleaner removed.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "air"
+      ],
+      "notes": "Detailed LP668 service section says inspect the air cleaner every 100 operating hours; replace at 600 hours or yearly."
+    },
+    {
+      "id": "task_ad5fc902-9503-49d5-b1b2-b4d8c1a7ad50",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Replace primary fuel-filter element",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 200,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Replace the primary fuel/water-separator element using the installed filter manufacturer’s procedure. If the bowl fills with water, replace both primary and secondary elements immediately.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "fuel",
+        "filter"
+      ],
+      "notes": "LP668 manual calls for primary element replacement every 200 operating hours or whenever necessary. The exact primary filter model installed on Trickster is not entered here."
+    },
+    {
+      "id": "task_729dedc3-9bd8-4e9e-bc36-6a542af9c27c",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Inspect keel-cooled engine zinc",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 200,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain the expansion tank enough to remove the zinc holder. Remove and clean the zinc. Replace it if more than half consumed. Reinstall with clean threads and good metal-to-metal contact.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "zinc",
+        "cooling"
+      ],
+      "notes": "LP668 manual: check cooling-system zinc electrodes every 200 operating hours; for keel-cooled engines the zinc holder is in the expansion tank."
+    },
+    {
+      "id": "task_ce52b9b9-95f5-4c39-b4db-0147e516ff9d",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Replace main-engine air cleaner",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 600,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Remove and replace the air-cleaner element, keeping the intake absolutely clean. Inspect the connecting rubber tube and clamps; start and check for leaks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "air"
+      ],
+      "notes": "LP668 manual: replace air cleaner every 600 operating hours or yearly, whichever comes first."
+    },
+    {
+      "id": "task_4c5b7be7-bc4c-4520-adea-4738293a89f2",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Inspect main-engine V-belt",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 600,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Inspect belt condition and tension; replace a damaged or deteriorated belt using the engine manual procedure.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "belt"
+      ],
+      "notes": "LP668 service chart lists V-belt condition in the 600-hour/yearly service."
+    },
+    {
+      "id": "task_8ef81c66-a4e6-445f-a573-d47d03409c10",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Replace secondary fuel filter",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 600,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Shut off fuel, drain/remove the engine-mounted secondary cartridge, install a clean new cartridge, restore fuel and bleed air as required. Check for leaks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "fuel",
+        "filter"
+      ],
+      "notes": "LP668 manual: secondary fuel filter every 600 operating hours; 600-hour service is also yearly. Manual identifies secondary cartridge 24-51005."
+    },
+    {
+      "id": "task_10a0de36-01fa-435c-821c-4adc9c008d85",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Check main-engine fuel injectors",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 600,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Have injectors checked by a Lugger/Northern Lights dealer or qualified fuel-injection shop.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "fuel",
+        "dealer"
+      ],
+      "notes": "LP668 manual: injector check every 600 operating hours; included in the 600-hour/yearly service."
+    },
+    {
+      "id": "task_5bde86ae-f0a4-4e35-a2d8-38f188d6bd6d",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Flush main-engine cooling system",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 600,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "With engine stopped and cold, drain and flush the fresh-water cooling circuit using the keel-cooled arrangement, refill with the specified coolant, then run and check for leaks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "cooling"
+      ],
+      "notes": "LP668 manual explicitly calls for cooling-system flush/check for leaks and blockage every 600 operating hours or yearly. Raw-water-pump and heat-exchanger tasks are intentionally omitted for Trickster’s keel-cooled main engine."
+    },
+    {
+      "id": "task_494a731d-21a2-4e5f-a7af-9bb3dc4a2ae3",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Check main-engine valve clearances",
+      "category": "engine",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 1200,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Check/adjust valve clearances with the engine cold using the specified flywheel timing tools/procedure, or have a qualified technician perform the work.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "valves"
+      ],
+      "notes": "LP668 manual: after initial checks, valve clearances recur every 1200 operating hours. Manual values: intake 0.012–0.015 in (0.31–0.38 mm), exhaust 0.016–0.019 in (0.41–0.48 mm), cold."
+    },
+    {
+      "id": "task_57155e9b-9321-479a-b9a8-dedc25b57d1a",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "title": "Check main-engine fuel-injection pump",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+            "interval": 2400,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Have the fuel-injection pump checked by a qualified diesel fuel-injection service provider.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/68520442/lugger-lp668t-marine-engine-operator-s-manual"
+      },
+      "tags": [
+        "fuel",
+        "dealer"
+      ],
+      "notes": "LP668 service schedule lists the fuel-injection pump check at 2400 operating hours."
+    },
+    {
+      "id": "task_dd6fbbc4-219f-4f81-80e1-421a4d5afb1a",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Change generator oil and oil filter",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Warm generator, shut down, drain oil through the oil-change tube, replace filter, refill, run and check for leaks, stop, wait about 3 minutes and recheck level.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "oil",
+        "filter"
+      ],
+      "notes": "M753K manual: every 250 operating hours; oil/filter items are marked for annual maintenance if the hour level is not reached. Capacity with new filter: 3.7 qt / 3.5 L. Above 32°F: SAE 30W or SAE 15W-40; -10°F to 32°F: SAE 10W or 10W-30; below -10°F: SAE 5W or 5W-20. Oil filter: Northern Lights #140516190."
+    },
+    {
+      "id": "task_044b6f5a-78f0-4910-9285-c2e4638f5a5d",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Inspect generator air cleaner",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Inspect the marine air-cleaner element; if dirty, wash in soapy water, rinse and dry thoroughly. Replace if necessary. Keep dirt out of the intake.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "air"
+      ],
+      "notes": "M753K manual: inspect every 250 operating hours (more often if dusty); item is marked for annual maintenance. Marine air-cleaner element #24-22003."
+    },
+    {
+      "id": "task_965683c0-7f2a-4a63-8b82-453bfec826f8",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Replace generator primary fuel-filter element",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 500,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Replace the installed primary fuel/water-separator element per its manufacturer instructions. Drain water as needed and check for leaks after service.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "fuel",
+        "filter"
+      ],
+      "notes": "M753K manual: primary filter element every 500 operating hours or as necessary. Exact Racor model installed on Trickster is not preloaded."
+    },
+    {
+      "id": "task_9bc33b07-2a64-4431-b7b8-3713c19b7a19",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Replace generator secondary fuel filter",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 500,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Remove the spin-on secondary filter, oil the new gasket, install and hand-tighten per manual, bleed if needed, run and check for fuel leaks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "fuel",
+        "filter"
+      ],
+      "notes": "M753K manual: secondary fuel filter every 500 operating hours; item is marked for annual maintenance. Northern Lights #130336020."
+    },
+    {
+      "id": "task_42ad62bd-dab7-4dac-a1b1-5cffe4b4298e",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Inspect generator exhaust elbow",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 500,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Inspect the exhaust elbow for leakage, corrosion, restriction or deterioration; repair/replace as indicated by inspection.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "exhaust"
+      ],
+      "notes": "M753K service schedule lists exhaust-elbow inspection every 500 operating hours."
+    },
+    {
+      "id": "task_11bff84d-e746-4bf4-9d5c-b7674680dbb0",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Service generator air cleaner",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 1000,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Service the marine air-cleaner element; clean if serviceable and replace if necessary. Keep contamination out of the intake.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "air"
+      ],
+      "notes": "M753K schedule lists air-cleaner element service at 1000 operating hours; air-cleaner item is marked for annual maintenance."
+    },
+    {
+      "id": "task_b366462d-3372-4244-b601-e2a51c688c48",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Check generator valve clearances",
+      "category": "engine",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 1000,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "With engine cold, check/adjust valve clearances following the M753K procedure or have a qualified technician perform it.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "valves"
+      ],
+      "notes": "M753K manual: every 1000 operating hours; item is marked for annual maintenance. Manual clearance is 0.008 in (0.2 mm) for intake and exhaust."
+    },
+    {
+      "id": "task_8b32feea-e249-4a1a-afb2-9e0d43a0ce31",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Check generator injectors",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 1000,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Have injectors checked by a Northern Lights dealer or local injection-repair station.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "fuel",
+        "dealer"
+      ],
+      "notes": "M753K manual: injector check every 1000 operating hours; item is marked for annual maintenance."
+    },
+    {
+      "id": "task_d95ddd4a-d5c0-4d8a-8e32-364b9a00e5f3",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Replace generator raw-water impeller",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 1000,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Close seacock as appropriate, remove pump cover, remove all old impeller pieces, clean housing, install new impeller and cover gasket, reopen seacock and verify cooling-water discharge/leaks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "cooling",
+        "impeller"
+      ],
+      "notes": "M753K marine schedule: replace raw-water impeller every 1000 operating hours; item is marked for annual maintenance / as necessary. Manual recommends carrying a spare impeller and cover gasket."
+    },
+    {
+      "id": "task_127488d2-ec47-40e6-af76-f4457dc12f54",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Check generator fuel-injection pump",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 2500,
+            "unit": "hours"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Have the injection pump checked by a qualified Northern Lights/diesel fuel-injection service provider.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "fuel",
+        "dealer"
+      ],
+      "notes": "M753K service schedule lists fuel-injection-pump check every 2500 operating hours."
+    },
+    {
+      "id": "task_27904f43-877c-409d-af51-b80750301edd",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Flush generator cooling system",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 2500,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "With generator cool, drain block/heat-exchanger circuit, flush with clean water until clear, close drains and refill; inspect hoses/connections and leak-check.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "cooling"
+      ],
+      "notes": "M753K manual: every 2500 operating hours or 12 months, whichever comes first. Manual coolant specification is 50% water / 50% ethylene-glycol antifreeze."
+    },
+    {
+      "id": "task_9dcc5c0f-1a7b-4b1f-a732-94af55708e63",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "title": "Clean generator heat exchanger",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+            "interval": 2500,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain cooling circuit, remove heat-exchanger end covers/core, clean tubes, flush and inspect, reassemble, refill and leak-check.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.northern-lights.com/media/PDFs/manual_pdfs/O753K.pdf"
+      },
+      "tags": [
+        "cooling",
+        "heat_exchanger"
+      ],
+      "notes": "M753K marine manual: clean heat exchanger once a year or after 2500 operating hours."
+    },
+    {
+      "id": "task_d3b2f9f6-ef8b-4033-bc5f-5c6d31cf625a",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Change wing-engine oil",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 150,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Warm engine, shut down, remove old engine oil, refill with specified oil and verify level; run briefly and inspect for leakage.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "oil"
+      ],
+      "notes": "Yanmar 3YM30AE/YM manual: every 150 operating hours or 1 year, whichever comes first. Recommended SAE viscosity: 10W-30 or 15W-40, both usable year-round. API categories listed: CD, CF, CF-4, CI, CI-4; manual says never use CG-4 or CH-4. Exact installed oil quantity is not preloaded because installation/gear configuration has not been verified."
+    },
+    {
+      "id": "task_285597d5-ae81-4a56-ba73-ed5db7d89093",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Replace wing-engine fuel filter",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Close fuel supply, replace the engine fuel-filter element cleanly, restore fuel, bleed air as required and check for leakage.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "fuel",
+        "filter"
+      ],
+      "notes": "Yanmar 3YM30AE periodic schedule: replace fuel-filter element every 250 operating hours or 1 year, whichever comes first."
+    },
+    {
+      "id": "task_7479d59f-a11f-4835-bac1-7211b822d3ff",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Replace wing-engine oil filter",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Remove the engine oil-filter element, install the new element per Yanmar instructions, then run and verify oil pressure/leaks and level.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "oil",
+        "filter"
+      ],
+      "notes": "Yanmar 3YM30AE periodic schedule: replace engine oil-filter element every 250 operating hours or 1 year, whichever comes first."
+    },
+    {
+      "id": "task_51d2bf53-50c8-4609-bb3e-ee4f3122f2f0",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Inspect wing-engine seawater-pump impeller",
+      "category": "cooling",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Inspect the seawater-pump impeller and replace if damaged, cracked, permanently set or otherwise unserviceable; verify seawater flow after reassembly.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "cooling",
+        "impeller"
+      ],
+      "notes": "Yanmar 3YM30AE periodic schedule includes checking/replacing the seawater-pump impeller every 250 operating hours or 1 year. A mandatory replacement also appears in the 1000-hour/4-year service."
+    },
+    {
+      "id": "task_851a762d-df30-4f4e-9628-282ec2f4116f",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Wing-engine 250-hour / annual inspection service",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 250,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain water/sediment from fuel tank as applicable; clean intake silencer; clean/check exhaust-water mixing elbow; adjust alternator V-ribbed belt; inspect wiring connectors. Address defects found.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "inspection"
+      ],
+      "notes": "These items are listed in the Yanmar 3YM30AE 250-operating-hour / 1-year maintenance group. Marine-gear oil is deliberately excluded because Trickster’s installed gear model has not been verified."
+    },
+    {
+      "id": "task_b7145f05-3e3b-46b4-970a-28896d07b441",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Wing-engine 1000-hour / 4-year major service",
+      "category": "service",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "interval": 1000,
+            "unit": "hours"
+          },
+          {
+            "type": "calendar",
+            "interval": 48,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Major service: replace seawater-pump impeller; clean/check seawater passages; inspect diaphragm assembly; replace alternator belt; check/adjust valve clearance and remote-control cables; check propeller-shaft alignment and major fasteners. Have injection timing and injector spray pattern checked by an authorized Yanmar dealer/service provider.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.yanmar.com/marine/wp-content/uploads/2020/03/0AYMM-M0002E_2025.02.pdf"
+      },
+      "tags": [
+        "major_service",
+        "dealer"
+      ],
+      "notes": "Yanmar 3YM30AE periodic schedule: every 1000 operating hours or 4 years, whichever comes first. This task groups the verified major-service items to keep the log manageable."
+    },
+    {
+      "id": "task_38348767-fd53-4fef-8de8-b5137a9c80f6",
+      "equipment_id": "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+      "title": "Replace/inspect bow-thruster anode",
+      "category": "corrosion",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "At seasonal service/haulout, inspect the sacrificial anode; replace before the season or when about half consumed. Use thread-lock/sealant on the retaining screw and do not paint the anode.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "anode",
+        "haulout"
+      ],
+      "notes": "SP155 TC manual: replace the zinc anode before every season or when about half gone. Current Sleipner documentation lists zinc 20 1180 and aluminum-alloy 20 1180A as SP155-compatible anodes. Twelve months is used here to represent the manufacturer’s once-per-season instruction."
+    },
+    {
+      "id": "task_c253e3c9-0817-4ebc-b74e-896e0ed041c7",
+      "equipment_id": "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+      "title": "Seasonal bow-thruster gearhouse/propeller service",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "At haulout, check gear-oil quality, propeller security/free rotation, gearhouse/propeller fouling and electrical/mechanical condition. Antifoul gearhouse/propeller as appropriate, but never paint the anode, seals or propeller shafts.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "haulout",
+        "inspection"
+      ],
+      "notes": "SP155 TC manual: check gear-oil quality whenever the boat is out of the water and clean/antifoul propeller and gearhouse before every season."
+    },
+    {
+      "id": "task_08de9224-b677-4a35-9e5e-f5b3bebbb69e",
+      "equipment_id": "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+      "title": "Change bow-thruster gear oil",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 24,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain/change gear oil per SP155 TC procedure and refill reservoir/gearhouse. Confirm oil can flow freely from the reservoir to the gearhouse and check for leakage.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "gear_oil"
+      ],
+      "notes": "SP155 TC manual: change gear oil a minimum of every second year. Specified lubricant: EP90 gear oil; the reservoir must always contain oil."
+    },
+    {
+      "id": "task_707e2856-f533-421e-8a73-589dff472323",
+      "equipment_id": "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be",
+      "title": "Replace/inspect stern-thruster anode",
+      "category": "corrosion",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "At seasonal service/haulout, inspect the sacrificial anode; replace before the season or when about half consumed. Use thread-lock/sealant on the retaining screw and do not paint the anode.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "anode",
+        "haulout"
+      ],
+      "notes": "SP155 TC manual: replace the zinc anode before every season or when about half gone. Current Sleipner documentation lists zinc 20 1180 and aluminum-alloy 20 1180A as SP155-compatible anodes. Twelve months is used here to represent the manufacturer’s once-per-season instruction."
+    },
+    {
+      "id": "task_75877259-ab0a-4204-9939-fd1082643203",
+      "equipment_id": "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be",
+      "title": "Seasonal stern-thruster gearhouse/propeller service",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "At haulout, check gear-oil quality, propeller security/free rotation, gearhouse/propeller fouling and electrical/mechanical condition. Antifoul gearhouse/propeller as appropriate, but never paint the anode, seals or propeller shafts.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "haulout",
+        "inspection"
+      ],
+      "notes": "SP155 TC manual: check gear-oil quality whenever the boat is out of the water and clean/antifoul propeller and gearhouse before every season."
+    },
+    {
+      "id": "task_49194eef-3c3c-43c9-84d9-721ac995063a",
+      "equipment_id": "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be",
+      "title": "Change stern-thruster gear oil",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 24,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain/change gear oil per SP155 TC procedure and refill reservoir/gearhouse. Confirm oil can flow freely from the reservoir to the gearhouse and check for leakage.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzilla.com/doc/7374231/side-power-sp-155-tc-i-user-s-manual"
+      },
+      "tags": [
+        "gear_oil"
+      ],
+      "notes": "SP155 TC manual: change gear oil a minimum of every second year. Specified lubricant: EP90 gear oil; the reservoir must always contain oil."
+    },
+    {
+      "id": "task_7d9dddd3-276a-48e9-8a1f-e132d8c079d1",
+      "equipment_id": "eq_97f88c21-b4bb-446e-acc9-5abe8fa2e1f4",
+      "title": "Annual stabilizer inspection/service",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Check fin-actuator bonding; verify cooling-water supply and normal temperature; check pressure-filter indicator; inspect pumps/reservoir/valves/cylinder rods, hoses and piping for leakage/damage; check fin-actuator mounting fasteners and lubricate trunnion/rod-end areas; perform centering and movement checks.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.scribd.com/document/902360170/Naiad-Stabiliser-Models-162-254-Datum-Owners-Handbook"
+      },
+      "tags": [
+        "hydraulic",
+        "inspection"
+      ],
+      "notes": "Naiad 162-254 owner handbook lists these items under yearly routine maintenance. Heat-exchanger zinc inspection is not included because the handbook states zinc-equipped heat exchangers are system-dependent and Trickster’s exact heat-exchanger configuration has not been verified."
+    },
+    {
+      "id": "task_c3e71f00-7f46-4216-9b47-223af0d05e2c",
+      "equipment_id": "eq_97f88c21-b4bb-446e-acc9-5abe8fa2e1f4",
+      "title": "Change stabilizer reservoir oil",
+      "category": "hydraulic",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 36,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Drain reservoir oil, reinstall drain plug without overtightening, and refill through a clean funnel and disposable paper strainer using the correct Naiad-approved oil for the installed system.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.scribd.com/document/902360170/Naiad-Stabiliser-Models-162-254-Datum-Owners-Handbook"
+      },
+      "tags": [
+        "hydraulic",
+        "oil"
+      ],
+      "notes": "Naiad 162-254 handbook: every 3 years or 4000 operating hours. No stabilizer-hour meter is preloaded because one has not been verified on Trickster; add a 4000-hour meter trigger if reliable stabilizer operating hours become available."
+    },
+    {
+      "id": "task_3dde34c8-8438-4652-984e-9932a4e2dfee",
+      "equipment_id": "eq_97f88c21-b4bb-446e-acc9-5abe8fa2e1f4",
+      "title": "Replace stabilizer lower shaft seals",
+      "category": "haulout",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 36,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Schedule at haulout. Center and positively lock fin actuators before service. Replace lower shaft seals with genuine Naiad seals following the handbook/service procedure.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://www.scribd.com/document/902360170/Naiad-Stabiliser-Models-162-254-Datum-Owners-Handbook"
+      },
+      "tags": [
+        "seals",
+        "haulout"
+      ],
+      "notes": "Naiad 162-254 handbook: replace lower seals every 3 years or 4000 operating hours, more frequently if fin shafts are not cycled at least twice per month. No unverified stabilizer-hour meter has been created."
+    },
+    {
+      "id": "task_37e5cb9f-232d-49c8-b02d-b44816b7de64",
+      "equipment_id": "eq_fd265d82-6648-4914-94c8-021c2196ce7b",
+      "title": "Quarterly windlass clean/lubricate service",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 3,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Disassemble above-deck components to the deckplate, clean and inspect, grease components—especially clutch-cone surfaces—then reassemble. Inspect below-deck components for corrosion and protect as needed.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/6639860/2200-vw-vwc-vwclp-manual"
+      },
+      "tags": [
+        "windlass",
+        "grease"
+      ],
+      "notes": "Maxwell 2200 VWC manual: every 3 months. Use lithium-complex-base waterproof grease, consistency No. 2. Never mix incompatible greases."
+    },
+    {
+      "id": "task_c248cab9-7ce6-4260-bb40-dbc7ede22ea5",
+      "equipment_id": "eq_fd265d82-6648-4914-94c8-021c2196ce7b",
+      "title": "Annual windlass motor/drainage service",
+      "category": "service",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Perform quarterly service, remove gearbox/spacer tube/motor as directed, flush drainage slots clear of debris, and service the DC motor.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/6639860/2200-vw-vwc-vwclp-manual"
+      },
+      "tags": [
+        "windlass",
+        "motor"
+      ],
+      "notes": "Maxwell 2200 VWC manual: every year in addition to the three-month service."
+    },
+    {
+      "id": "task_31039bcb-0ffc-46e3-b5ae-cf0f47339428",
+      "equipment_id": "eq_fd265d82-6648-4914-94c8-021c2196ce7b",
+      "title": "Three-year windlass gearbox service",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 36,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": null,
+        "meter_values": []
+      },
+      "procedure": "Perform annual service, remove spacer tube, clean mating faces, drain gearbox, replace seals, flush if appropriate, then fill gearbox completely with new specified oil.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://manualzz.com/doc/6639860/2200-vw-vwc-vwclp-manual"
+      },
+      "tags": [
+        "windlass",
+        "gear_oil"
+      ],
+      "notes": "Maxwell 2200 VWC manual: every 3 years. Gearbox lubricant: ISO 3448 VG 320. Approximate fill: 800 mL / 27 fl oz. Never mix oil types."
+    },
+    {
+      "id": "task_d7e199ef-9322-4f79-b61f-7e95a43830dc",
+      "equipment_id": "eq_a7dd481e-c471-47a0-bc4a-28b024ad0037",
+      "title": "Quarterly house-battery inspection",
+      "category": "electrical",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 3,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-06-02",
+        "meter_values": []
+      },
+      "procedure": "Inspect each terminal for corrosion; clean/neutralize/dry and protect if needed. Check connections for looseness. With bank on float charge, record system float voltage, each battery voltage and ambient temperature.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://lifelinebatteries.com/wp-content/uploads/2015/12/6-0101G_Lifeline_Technical_Manual.pdf"
+      },
+      "tags": [
+        "battery",
+        "inspection"
+      ],
+      "notes": "Lifeline AGM Technical Manual Rev. G recommends quarterly terminal inspection and float-voltage/individual-battery/temperature records. AGM batteries do not require electrolyte adjustment. Exact terminal hardware is not verified, so no torque value is entered."
+    },
+    {
+      "id": "task_c03c963d-6f5b-4a00-ae11-79305bab9305",
+      "equipment_id": "eq_a7dd481e-c471-47a0-bc4a-28b024ad0037",
+      "title": "Annual house-battery capacity/charging-system test",
+      "category": "electrical",
+      "active": true,
+      "task_kind": "recurring",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "calendar",
+            "interval": 12,
+            "unit": "months"
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-06-02",
+        "meter_values": []
+      },
+      "procedure": "Run a full charge cycle and record charger current, absorption/float/ripple voltage, each battery voltage and ambient temperature. Perform a controlled capacity discharge test, record run time/Ah/load/end voltage, then recharge fully as soon as possible.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "https://lifelinebatteries.com/wp-content/uploads/2015/12/6-0101G_Lifeline_Technical_Manual.pdf"
+      },
+      "tags": [
+        "battery",
+        "capacity_test"
+      ],
+      "notes": "Lifeline AGM Technical Manual Rev. G recommends this yearly service. No invented capacity result or replacement threshold is preloaded."
+    },
+    {
+      "id": "task_98be19a0-20c3-4b07-8fc3-33661395f633",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: drain wing-engine fuel tank",
+      "category": "fuel",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Drain water and sediment from the fuel tank as specified by Yanmar's initial 50-hour maintenance. Use an approved container and stop when fuel is clean/free of sediment. Exact Trickster tank/drain arrangement should be confirmed before opening anything.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_44fe3a46-17ca-4854-b794-7d60b5c4fd52",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: change Yanmar engine oil and filter",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Initial break-in oil service. Change engine oil while warm and replace the engine-oil filter element. Use the oil specification already recorded for the 3YM30AE in this dataset/manufacturer manual.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_b7320314-d874-45fc-b1e7-c49e1a3b7ea5",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: service Yanmar marine gear oil/filter",
+      "category": "lubrication",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Yanmar calls for changing marine-gear oil and replacing the marine-gear oil filter if equipped at the initial 50 hours. The installed marine-gear model on Trickster has not been verified here, so confirm its model/manual, oil specification, capacity, and whether a filter is fitted before servicing.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_b47ac13c-6c62-44d4-b4dd-319c0f700d3f",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: check/adjust Yanmar alternator belt tension",
+      "category": "inspection",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Check and adjust the alternator V-ribbed belt tension per the Yanmar YM Series manual. Inspect the belt for damage while checking tension.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_2d9acb89-685d-44e6-8574-1e1aefce7119",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: inspect/adjust Yanmar valve clearance",
+      "category": "engine",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Inspect and adjust intake/exhaust valve clearance as specified for the initial 50-hour service. This is precision engine work; follow the Yanmar procedure/specification rather than using a generic clearance.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_f1f280d8-6950-4d2b-90b3-319a94342745",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: check/adjust Yanmar remote-control cables",
+      "category": "controls",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Check and adjust the remote-control cables so shift/throttle controls move correctly through their intended positions. Follow the Yanmar procedure for the installed control arrangement.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    },
+    {
+      "id": "task_ad009033-1087-43e8-baf3-5e043eab0707",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "title": "Initial 50h: check wing propeller-shaft alignment",
+      "category": "drivetrain",
+      "active": true,
+      "task_kind": "one_time",
+      "schedule": {
+        "logic": "any",
+        "triggers": [
+          {
+            "type": "meter_value",
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "due_value": 50,
+            "unit": "hours",
+            "warning": {
+              "value": 20,
+              "unit": "hours"
+            }
+          }
+        ]
+      },
+      "baseline": {
+        "date": "2026-08-29",
+        "meter_values": [
+          {
+            "meter_id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+            "value": 20,
+            "unit": "hours"
+          }
+        ]
+      },
+      "procedure": "Yanmar specifies checking and adjusting propeller-shaft alignment after the first 50 hours because flexible engine mounts may settle during initial operation. Yanmar notes this requires specialized knowledge/techniques; use a qualified marine technician if appropriate.",
+      "source": {
+        "type": "manufacturer_manual",
+        "reference": "Yanmar YM Series Operation Manual, 2025.02, sections 'New Engine Break-In' and 'After Initial 50 Hours of Operation'"
+      },
+      "tags": [
+        "initial_service",
+        "break_in",
+        "yanmar"
+      ],
+      "notes": "Verified initial 50-hour maintenance item from the Yanmar YM Series Operation Manual."
+    }
+  ]
+}

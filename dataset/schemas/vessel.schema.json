@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:boat-maintenance:v1.2:vessel",
+  "type": "object",
+  "required": [
+    "file_type",
+    "schema_version",
+    "record"
+  ],
+  "properties": {
+    "file_type": {
+      "const": "vessel"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "vessel_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "builder": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "identifiers": {
+          "type": "array"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+{
+  "file_type": "parties",
+  "schema_version": "1.2.0",
+  "records": [
+    {
+      "id": "party_b187ff44-a59a-47da-841d-dca17f757f3f",
+      "name": "S3",
+      "kind": "service_provider",
+      "notes": "Owner log attributes the June 2, 2026 house-bank installation and Apr 28 fuel-fill consultation to S3. Full legal/business name not recorded here."
+    }
+  ]
+}

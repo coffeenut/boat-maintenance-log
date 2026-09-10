@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:boat-maintenance:v1.2:maintenance_tasks",
+  "type": "object",
+  "required": [
+    "file_type",
+    "schema_version",
+    "records"
+  ],
+  "properties": {
+    "file_type": {
+      "const": "maintenance_tasks"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "equipment_id",
+          "title",
+          "active",
+          "schedule"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "equipment_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "schedule": {
+            "type": "object",
+            "required": [
+              "logic",
+              "triggers"
+            ],
+            "properties": {
+              "logic": {
+                "const": "any"
+              },
+              "triggers": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "interval",
+                        "unit"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "calendar"
+                        },
+                        "interval": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "unit": {
+                          "enum": [
+                            "days",
+                            "weeks",
+                            "months",
+                            "years"
+                          ]
+                        },
+                        "warning": {
+                          "type": "object"
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "meter_id",
+                        "interval",
+                        "unit"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "meter"
+                        },
+                        "meter_id": {
+                          "type": "string"
+                        },
+                        "interval": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "unit": {
+                          "type": "string"
+                        },
+                        "warning": {
+                          "type": "object"
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "due_date"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "date"
+                        },
+                        "due_date": {
+                          "type": "string"
+                        },
+                        "warning": {
+                          "type": "object"
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "meter_id",
+                        "due_value",
+                        "unit"
+                      ],
+                      "properties": {
+                        "type": {
+                          "const": "meter_value"
+                        },
+                        "meter_id": {
+                          "type": "string"
+                        },
+                        "due_value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        },
+                        "warning": {
+                          "type": "object"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  ]
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "baseline": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "meter_values": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": true
+          },
+          "procedure": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "task_kind": {
+            "enum": [
+              "recurring",
+              "one_time"
+            ]
+          },
+          "origin_service_event_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "defer_until": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "date": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "meter_values": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "meter_id",
+                    "value",
+                    "unit"
+                  ],
+                  "properties": {
+                    "meter_id": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,434 @@
+{
+  "file_type": "equipment",
+  "schema_version": "1.2.0",
+  "records": [
+    {
+      "id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "name": "Main Engine",
+      "category": "propulsion_engine",
+      "manufacturer": "Lugger",
+      "model": "LP668D",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Engine room",
+      "attributes": {
+        "fuel": "diesel",
+        "cooling": "keel cooled",
+        "exhaust": "dry stack",
+        "aspiration": "natural"
+      },
+      "tags": [
+        "propulsion",
+        "diesel"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed keel-cooled, dry-stack, naturally aspirated installation. Raw-water-pump/heat-exchanger service items from the generic LP668 manual are intentionally omitted because the manual states the raw-water pump applies to heat-exchanger-cooled engines."
+    },
+    {
+      "id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "name": "Generator",
+      "category": "generator",
+      "manufacturer": "Northern Lights",
+      "model": "M753K.3",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Engine room",
+      "attributes": {
+        "rated_kw": 8,
+        "fuel": "diesel"
+      },
+      "tags": [
+        "electrical",
+        "diesel"
+      ],
+      "attachment_ids": [],
+      "notes": "8 kW marine generator. Maintenance entries use the Northern Lights M753K operator manual for the 753K engine/generator family; no generator-end-specific task has been added without a verified source."
+    },
+    {
+      "id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "name": "Wing Engine",
+      "category": "auxiliary_propulsion_engine",
+      "manufacturer": "Yanmar",
+      "model": "3YM30AE",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Engine room",
+      "attributes": {
+        "rated_hp_metric": 29.1,
+        "fuel": "diesel",
+        "aspiration": "natural"
+      },
+      "tags": [
+        "propulsion",
+        "backup",
+        "diesel"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed get-home engine. Installed fall 2017. Exact marine gear model and oil capacity are not entered because the installed gear/configuration has not been verified. Yanmar 3YM30AE break-in guidance (YM Series Operation Manual, 2025.02): from 10 to 50 operating hours, use the engine over its full operating range with emphasis on relatively high power settings; Yanmar says maximum speed minus 400 rpm (~70% load) most of the time, 10 minutes at maximum minus 200 rpm (~80% load) every 30 minutes, and 4–5 minutes at WOT once each 30 minutes. Avoid low-speed/light-load operation for more than 30 minutes; if unavoidable, race the engine afterward. Complete the initial 50-hour maintenance at 50 hours."
+    },
+    {
+      "id": "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+      "name": "Bow Thruster",
+      "category": "thruster",
+      "manufacturer": "Side-Power (Sleipner)",
+      "model": "SP155 TC",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Bow / forward machinery space",
+      "attributes": {
+        "rated_hp": 11
+      },
+      "tags": [
+        "thruster"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed SP155 TC. Legacy Side-Power manual specifies EP90 gear oil, seasonal anode/gearhouse service, and gear-oil change at least every second year."
+    },
+    {
+      "id": "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be",
+      "name": "Stern Thruster",
+      "category": "thruster",
+      "manufacturer": "Side-Power (Sleipner)",
+      "model": "SP155 TC",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Stern / lazarette",
+      "attributes": {
+        "rated_hp": 11
+      },
+      "tags": [
+        "thruster"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed SP155 TC. Legacy Side-Power manual specifies EP90 gear oil, seasonal anode/gearhouse service, and gear-oil change at least every second year."
+    },
+    {
+      "id": "eq_97f88c21-b4bb-446e-acc9-5abe8fa2e1f4",
+      "name": "Stabilizer System",
+      "category": "stabilizers",
+      "manufacturer": "Naiad",
+      "model": "174-1",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Engine room / fin actuators",
+      "attributes": {
+        "assembly": "0136",
+        "relief_pressure_psi": 1250
+      },
+      "tags": [
+        "hydraulic",
+        "stabilizers"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed Naiad 174-1 system. The verified 162-254 owner handbook gives 3 years or 4000 operating hours for reservoir oil and lower seals. No stabilizer hour meter is entered because no such meter on Trickster has been verified, so this dataset tracks the calendar side and calls out the omitted 4000-hour trigger in the task notes.",
+      "serial_number": "04074888"
+    },
+    {
+      "id": "eq_fd265d82-6648-4914-94c8-021c2196ce7b",
+      "name": "Windlass",
+      "category": "windlass",
+      "manufacturer": "Maxwell",
+      "model": "VWC2200",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Foredeck",
+      "attributes": {},
+      "tags": [
+        "ground_tackle"
+      ],
+      "attachment_ids": [],
+      "notes": "Confirmed VWC2200. Maintenance is based on the Maxwell 2200 VW/VWC/VWCLP manual."
+    },
+    {
+      "id": "eq_a7dd481e-c471-47a0-bc4a-28b024ad0037",
+      "name": "House Battery Bank",
+      "category": "battery_bank",
+      "manufacturer": "Lifeline",
+      "model": "8D AGM (4-battery bank)",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Forward berth + lazarette",
+      "attributes": {
+        "chemistry": "AGM",
+        "nominal_voltage": 12,
+        "quantity": 4,
+        "installed_date": "2026-06-02",
+        "battery_count": 4,
+        "model": "GPL-8DL"
+      },
+      "tags": [
+        "electrical",
+        "house"
+      ],
+      "attachment_ids": [],
+      "notes": "Four Lifeline GPL-8DL AGM batteries. Owner log: new house bank installed by S3 on Jun 2, 2026. The installation date is used as the calendar baseline for battery maintenance tasks."
+    },
+    {
+      "id": "eq_c49cb696-b841-4d14-a091-88227e48b36d",
+      "name": "Smoke & CO Detectors",
+      "category": "safety_detection",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Master cabin, guest cabin, salon, pilothouse",
+      "attributes": {
+        "quantity": 4
+      },
+      "tags": [
+        "safety"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: four smoke/CO detectors installed Dec 22, 2025. Exact manufacturer/model not recorded."
+    },
+    {
+      "id": "eq_d2c72355-ef9d-42e3-88ca-6b98838bd9c5",
+      "name": "Fire Extinguishers",
+      "category": "fire_safety",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "safety"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: fire extinguishers installed Dec 28, 2025. Quantity, manufacturer, model, and ratings not recorded here."
+    },
+    {
+      "id": "eq_9ceb9e6f-1df4-4cae-aa20-53d9524e5aaa",
+      "name": "Freshwater Pressure Pump",
+      "category": "freshwater_pump",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "freshwater"
+      ],
+      "attachment_ids": [],
+      "notes": "Presence verified by owner troubleshooting log beginning Dec 30, 2025. Exact make/model not recorded here."
+    },
+    {
+      "id": "eq_f31db94e-9887-4769-b5d6-7933336c734c",
+      "name": "Freshwater Filtration System",
+      "category": "freshwater_filtration",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "freshwater"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log records filter/system replacement work on Feb 17, Apr 13, and May 4, 2026. Exact make/model not recorded here."
+    },
+    {
+      "id": "eq_8626dd77-046a-4a8d-90b1-eb4c1af2aab4",
+      "name": "Fuel Polishing / Transfer System",
+      "category": "fuel_transfer",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "fuel"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log confirms the fuel polishing/transfer system was identified and operated on Jan 4, 2026. Exact equipment make/model not recorded here."
+    },
+    {
+      "id": "eq_d8394ff9-9747-437f-b32c-7a713e146cc4",
+      "name": "Searchlight",
+      "category": "searchlight",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "lighting"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: replacement searchlight bulbs installed Jan 3, 2026. Exact searchlight make/model not recorded here."
+    },
+    {
+      "id": "eq_0a4a8023-3559-4331-bd94-278af344e3c9",
+      "name": "Navigation Lights",
+      "category": "navigation_lighting",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Exterior",
+      "attributes": {},
+      "tags": [
+        "lighting",
+        "navigation"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: navigation lights cleaned Jan 3, 2026, with a note that replacement would be needed."
+    },
+    {
+      "id": "eq_240c7b59-c869-406f-940a-3c61ce0432ad",
+      "name": "HVAC Shore-Power SmartPlug",
+      "category": "shore_power",
+      "manufacturer": "SmartPlug",
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "electrical",
+        "hvac"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: SmartPlug added for HVAC Feb 17, 2026; mount glassed Feb 22 and finished Feb 23. Exact SmartPlug model not recorded here."
+    },
+    {
+      "id": "eq_1bdae4b0-9afd-465c-8f65-fc9cab2b1bc7",
+      "name": "AIS Transceiver",
+      "category": "ais",
+      "manufacturer": "Garmin",
+      "model": "AIS 600",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "navigation",
+        "communications"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: updated Garmin AIS 600 reinstalled Apr 16, 2026."
+    },
+    {
+      "id": "eq_6dfb6ec8-9b7a-4cc9-8218-be866bd56940",
+      "name": "Davit Hoists",
+      "category": "davit_hoist",
+      "manufacturer": "Warn",
+      "model": "1000",
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Davit boom",
+      "attributes": {
+        "quantity": 2
+      },
+      "tags": [
+        "davit"
+      ],
+      "attachment_ids": [],
+      "notes": "Two Warn 1000 hoists installed on the davit boom Apr 16, 2026. More specific model designation not recorded here."
+    },
+    {
+      "id": "eq_129eaacf-b0e1-40c2-b614-14185cd256eb",
+      "name": "Anchor Chain",
+      "category": "ground_tackle",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Foredeck / chain locker",
+      "attributes": {},
+      "tags": [
+        "ground_tackle"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log records adding 10-foot chain markers Apr 13 and additional chain markers Apr 17, 2026."
+    },
+    {
+      "id": "eq_13d2baf4-f560-4d2c-a9ac-ac14b03250cf",
+      "name": "Starboard Fuel Fill / Tank System",
+      "category": "fuel_tank",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": "Starboard",
+      "attributes": {},
+      "tags": [
+        "fuel"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log records a starboard fuel tank/hose issue Feb 17, 2026 and an S3 consultation on the starboard fuel-tank fill Apr 28, 2026. No specific cause is asserted."
+    },
+    {
+      "id": "eq_d6072972-e60d-45aa-abdc-89e0b86acaad",
+      "name": "Bonding System",
+      "category": "bonding",
+      "manufacturer": null,
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": null,
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "electrical",
+        "corrosion_control"
+      ],
+      "attachment_ids": [],
+      "notes": "Owner log: bonding-wire terminal installed Jan 4, 2026."
+    },
+    {
+      "id": "eq_ae41c4a0-39cc-4df6-b429-c78dd48fd376",
+      "name": "Main Engine Dual Racor Fuel Filters",
+      "category": "fuel_filtration",
+      "manufacturer": "Racor",
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "fuel",
+        "filtration"
+      ],
+      "attachment_ids": [],
+      "notes": "Dual Racor fuel-filter arrangement serving the main engine. Exact Racor model numbers not yet recorded."
+    },
+    {
+      "id": "eq_14863bcf-c404-4c6b-b190-81f7dba429ef",
+      "name": "Wing Engine Racor Fuel Filter",
+      "category": "fuel_filtration",
+      "manufacturer": "Racor",
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "fuel",
+        "filtration"
+      ],
+      "attachment_ids": [],
+      "notes": "Racor fuel filter serving the wing engine. Exact Racor model number not yet recorded."
+    },
+    {
+      "id": "eq_e940bc63-15bb-4272-a5a6-d15270fb27e5",
+      "name": "Generator Racor Fuel Filter",
+      "category": "fuel_filtration",
+      "manufacturer": "Racor",
+      "model": null,
+      "status": "active",
+      "parent_equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "location": null,
+      "attributes": {},
+      "tags": [
+        "fuel",
+        "filtration"
+      ],
+      "attachment_ids": [],
+      "notes": "Single Racor fuel filter serving the generator. Exact Racor model number not yet recorded."
+    }
+  ]
+}

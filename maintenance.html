@@ -1,0 +1,1788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boat Maintenance Log v0.21</title>
+<style>
+:root{
+  --bg:#f5f7f8;--card:#fff;--text:#172026;--muted:#66737d;--line:#d9e0e4;
+  --accent:#1f5f78;--accent2:#eaf3f6;--bad:#9b2c2c;--warn:#8a5a00;--good:#2f6f48;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--radius:12px
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+header{background:#173747;color:white;padding:18px 22px;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+header h1{font-size:20px;margin:0}.sub{font-size:13px;opacity:.8}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.button{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
+button.primary,.button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+button.danger{color:var(--bad)}
+button:disabled{opacity:.5;cursor:not-allowed}
+nav{display:flex;gap:14px;align-items:center;padding:9px 16px;background:#fff;border-bottom:1px solid var(--line);overflow:auto}
+.nav-group{display:flex;gap:4px;align-items:center;white-space:nowrap}
+.nav-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:750;margin-right:3px}
+.nav-divider{width:1px;height:28px;background:var(--line);flex:0 0 auto}
+nav button{border:0;background:transparent;padding:9px 12px;white-space:nowrap}
+nav button.active{background:var(--accent2);color:var(--accent);font-weight:650}
+.editor-card{margin-top:14px;border-top:4px solid var(--accent)}
+.editor-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}
+.editor-head h2{margin-bottom:3px}
+.list-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:4px}
+.list-head h2{margin:0}
+.log-btn{padding:5px 9px;font-size:12px}
+tr.clickable td{transition:background .08s}
+tr.clickable:hover td{background:#f3f8fa}
+main{max-width:1180px;margin:0 auto;padding:20px}
+.notice{background:#fff8dc;border:1px solid #ead99c;padding:12px 14px;border-radius:10px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+.metric{font-size:28px;font-weight:750;margin-top:5px}.label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+h2{font-size:20px;margin:0 0 14px}h3{font-size:16px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:9px 8px;vertical-align:top}th{font-size:12px;color:var(--muted);font-weight:650}
+tr.clickable:hover{background:#f8fbfc;cursor:pointer}
+.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:650}
+.overdue{background:#fde7e7;color:var(--bad)}.soon{background:#fff1c9;color:var(--warn)}.ok{background:#e6f4ea;color:var(--good)}.unknown{background:#edf0f2;color:#59656d}.complete{background:#e8edf8;color:#40527b}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:10px}
+.field{grid-column:span 6}.field.full{grid-column:span 12}.field.third{grid-column:span 4}
+label{display:block;font-size:12px;color:var(--muted);font-weight:650;margin-bottom:4px}
+input,select,textarea{width:100%;padding:9px;border:1px solid #cbd4d9;border-radius:8px;background:#fff;color:var(--text);font:inherit}
+textarea{min-height:78px;resize:vertical}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.muted{color:var(--muted)}.small{font-size:12px}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.task-check{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #edf0f2}.task-check input{width:auto;margin-top:3px}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.statusline{font-size:13px}.status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#888;margin-right:6px}.status-dot.live{background:#3d8b5f}.status-dot.dirty{background:#c27b18}
+.meter-age{font-size:12px}.meter-age.aging{color:var(--warn);font-weight:700}.meter-age.stale{color:var(--bad);font-weight:750}
+.stale-note{color:var(--bad);font-weight:700}.aging-note{color:var(--warn);font-weight:700}
+.dashboard-meter-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:end;padding:12px 0;border-bottom:1px solid var(--line)}
+.dashboard-meter-row:last-child{border-bottom:0}
+.dashboard-meter-row>div{min-width:0}
+.dashboard-meter-row input{padding:7px 8px;min-width:0}
+.dashboard-meter-row button{padding:8px 10px;width:100%}
+.dashboard-meter-row>div:last-child{grid-column:1/-1}
+.dashboard-meter-name{grid-column:1/-1;min-width:0}
+.dashboard-meter-name strong{display:block}
+.table-scroll{max-height:520px;overflow:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.table-scroll.compact{max-height:340px}
+.table-scroll table{margin:0}
+.table-scroll thead th{position:sticky;top:0;background:var(--card);z-index:2;box-shadow:0 1px 0 var(--line)}
+.toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:10px 0 12px}
+.toolbar .grow{flex:1 1 240px;min-width:180px}
+.toolbar .short{flex:0 1 180px;min-width:150px}
+.toolbar button.active-filter{background:var(--accent2);border-color:#bfd4dc;color:var(--accent);font-weight:700}
+.result-count{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
+.dashboard-left-stack{grid-column:span 8;display:grid;gap:14px;align-content:start;min-width:0}
+.dashboard-right-stack{grid-column:span 4;align-self:start;min-width:0}
+.dashboard-left-stack>.card,.dashboard-right-stack>.card{min-width:0}
+.dashboard-meter-scroll{max-height:720px;overflow:auto;padding-right:6px;margin-right:-6px}
+.history-summary{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 12px}
+.history-summary .summary-item{font-size:13px;color:var(--muted)}
+.history-summary strong{color:var(--text)}
+.task-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.task-actions button{white-space:nowrap}
+.detail-row td{padding:0!important;background:var(--panel)}
+.task-detail{padding:15px 17px 17px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.task-detail-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.8fr);gap:18px}
+.task-detail h3{margin:0 0 6px;font-size:14px}
+.task-detail-text{white-space:pre-wrap;line-height:1.48}
+.task-detail-meta{display:grid;gap:11px;align-content:start}
+.task-detail-meta .meta-block{font-size:13px}
+.task-detail-meta .meta-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:3px}
+.task-detail a{overflow-wrap:anywhere}
+@media(max-width:800px){
+  .task-detail-grid{grid-template-columns:1fr}
+
+  .dashboard-left-stack,.dashboard-right-stack{grid-column:span 12}
+}
+@media(max-width:700px){
+  .dashboard-meter-row{grid-template-columns:1fr}.dashboard-meter-name,.dashboard-meter-row>div:last-child{grid-column:1}
+  .table-scroll,.table-scroll.compact,.dashboard-meter-scroll{max-height:none;overflow:visible;border-top:0;border-bottom:0;padding-right:0;margin-right:0}
+  .table-scroll thead th{position:static;box-shadow:none}
+  .result-count{width:100%;margin-left:0}
+}
+.hidden{display:none!important}
+@media(max-width:800px){.span-8,.span-6,.span-4{grid-column:span 12}.field,.field.third{grid-column:span 12}main{padding:12px}header{padding:14px}.nav-label{display:none}.nav-divider{height:24px}nav{gap:6px;padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="appTitle">Boat Maintenance Log</h1>
+    <div class="sub" id="datasetStatus">No boat data loaded</div>
+  </div>
+  <div class="top-actions">
+    <button class="ghost" id="openZipBtn" type="button">Open Data ZIP</button>
+    <input id="importZipInput" type="file" accept=".zip,application/zip" class="hidden">
+    <button class="ghost" id="exportBtn" disabled>Save Data ZIP</button>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-group">
+    <span class="nav-label">Use</span>
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="log">Log Work</button>
+    <button data-view="history">Work History</button>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <span class="nav-label">Setup</span>
+    <button data-view="equipment">Equipment</button>
+    <button data-view="maintenance">Maintenance Schedule</button>
+    <button data-view="meters">Hours & Meters</button>
+  </div>
+</nav>
+
+<main>
+  <div id="browserNotice" class="notice hidden"></div>
+  <div id="noData" class="card">
+    <h2>Open your boat maintenance data</h2>
+    <p>This app keeps your records in ordinary JSON/JSONL files inside one portable ZIP. Nothing is uploaded anywhere.</p>
+    <div class="actions">
+      <button class="primary" id="openZipBtn2" type="button">Open Data ZIP</button>
+      <input id="importZipInput2" type="file" accept=".zip,application/zip" class="hidden">
+    </div>
+    <p class="small muted" style="margin-top:14px">
+      Your maintenance data is a normal ZIP containing readable JSON/JSONL files and attachments. Where supported, saving writes back to the ZIP you opened. On browsers that cannot overwrite it, the app protects the newer browser working copy and warns before opening an older ZIP.
+    </p>
+  </div>
+
+  <section id="dashboard" class="view hidden"></section>
+  <section id="log" class="view hidden"></section>
+  <section id="history" class="view hidden"></section>
+  <section id="equipment" class="view hidden"></section>
+  <section id="maintenance" class="view hidden"></section>
+  <section id="meters" class="view hidden"></section>
+</main>
+
+<script>
+"use strict";
+
+/* ---------- application state ---------- */
+const state = {
+  mode: null, // "direct" | "import"
+  rootHandle: null,
+  importedFiles: new Map(), // relative path -> Uint8Array
+  files: {},
+  dirty: false,
+  selectedEquipmentId: null,
+  selectedTaskId: null,
+  equipmentEditorOpen: false,
+  taskEditorOpen: false,
+  meterEditorOpen: false,
+  selectedMeterId: null,
+  meterEditorMode: null,
+  logPrefillTaskId: null,
+  zipFileHandle: null,
+  zipFileName: null,
+  lastSaveMode: null,
+  dashboardMaintenanceMode: "priority",
+  dashboardMaintenanceSearch: "",
+  equipmentSearch: "",
+  maintenanceSearch: "",
+  maintenanceStatusFilter: "all",
+  meterSearch: "",
+  recentWorkExpanded: false,
+  historySearch: "",
+  historyEquipmentFilter: "all",
+  historyFromDate: "",
+  historyToDate: "",
+  lastLoadMigrated: false,
+  dashboardExpandedTasks: [],
+  scheduleExpandedTasks: []
+};
+
+const requiredPaths = {
+  manifest:"manifest.json",
+  vessel:"data/vessel.json",
+  equipment:"data/equipment.json",
+  meters:"data/meters.json",
+  maintenance_tasks:"data/maintenance_tasks.json",
+  parts:"data/parts.json",
+  parties:"data/parties.json",
+  attachments:"data/attachments.json",
+  service_history:"data/service_history.jsonl",
+  meter_readings:"data/meter_readings.jsonl"
+};
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const enc = new TextEncoder(), dec = new TextDecoder();
+
+function uid(prefix){
+  if (crypto.randomUUID) return prefix+"_"+crypto.randomUUID();
+  return prefix+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2);
+}
+function esc(s=""){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function parseDateOnly(s){ if(!s)return null; const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function fmtDateObj(d){ return d?d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):"—"; }
+function fmtDate(s){ if(!s)return "—"; const d=parseDateOnly(s); return d?fmtDateObj(d):s; }
+function fmtObservedAt(s){
+  if(!s)return "—";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return fmtDate(s);
+  const d=new Date(s);
+  if(Number.isNaN(d.getTime())) return s;
+  return d.toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function readingAgeDays(r){
+  if(!r?.observed_at)return Infinity;
+  const ds=r.observed_at.slice(0,10);
+  const d=parseDateOnly(ds);
+  const now=parseDateOnly(todayISO());
+  return d?Math.max(0,Math.floor((now-d)/86400000)):Infinity;
+}
+function readingFreshness(r){
+  const days=readingAgeDays(r);
+  if(!Number.isFinite(days)) return {level:"stale",days,label:"No recent reading"};
+  if(days>30) return {level:"stale",days,label:`Meter stale — ${days} days old`};
+  if(days>14) return {level:"aging",days,label:`Reading ${days} days old`};
+  return {level:"fresh",days,label:days===0?"Updated today":`${days} days old`};
+}
+function num(v,d=0){ return Number(v).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+const DB_NAME="boat-maintenance-local";
+const DB_VERSION=1;
+const STORE_NAME="state";
+const LAST_KEY="lastDataset";
+
+function openLocalDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=()=>{ const db=req.result; if(!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME); };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function idbSet(key,value){
+  const db=await openLocalDB();
+  await new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE_NAME,"readwrite");
+    tx.objectStore(STORE_NAME).put(value,key);
+    tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+  });
+  db.close();
+}
+async function idbGet(key){
+  const db=await openLocalDB();
+  const value=await new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE_NAME,"readonly");
+    const req=tx.objectStore(STORE_NAME).get(key);
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  db.close(); return value;
+}
+async function cacheWorkingCopy(){
+  if(!state.files?.manifest)return;
+  const core=serializeCoreFiles();
+  const cached={
+    mode:"import",
+    files:[...core.entries()],
+    importedFiles:state.mode==="import"?[...state.importedFiles.entries()].map(([k,v])=>[k,Array.from(v)]):null,
+    savedAt:new Date().toISOString(),
+    dirty:state.dirty,
+    zipFileName:state.zipFileName||null
+  };
+  if(state.zipFileHandle) cached.zipFileHandle=state.zipFileHandle;
+  try{
+    await idbSet(LAST_KEY,cached);
+  }catch(e){
+    // Some browsers cannot structured-clone filesystem handles. Cache everything else.
+    if(cached.zipFileHandle){
+      delete cached.zipFileHandle;
+      try{ await idbSet(LAST_KEY,cached); return; }catch(e2){}
+    }
+    console.warn("Could not cache local state",e);
+  }
+}
+async function restoreCachedDataset(){
+  let cached;
+  try{ cached=await idbGet(LAST_KEY); }catch(e){ return false; }
+  if(!cached || !cached.files)return false;
+  try{
+    const texts=new Map(cached.files);
+    state.mode="import";
+    state.rootHandle=null;
+    state.files=parseLoadedTexts(texts);
+    state.importedFiles=new Map((cached.importedFiles||[]).map(([k,a])=>[k,new Uint8Array(a)]));
+    state.dirty=Boolean(cached.dirty)||Boolean(state.lastLoadMigrated);
+    state.zipFileHandle=cached.zipFileHandle||null;
+    state.zipFileName=cached.zipFileName||null;
+    afterLoad();
+    if(state.dirty){
+      $("#datasetStatus").innerHTML='<span class="status-dot dirty"></span>Restored working copy • save the Data ZIP when finished';
+    }else{
+      $("#datasetStatus").innerHTML='<span class="status-dot live"></span>Restored saved working copy';
+    }
+    return true;
+  }catch(e){
+    console.warn("Cached working copy restore failed",e);
+    return false;
+  }
+}
+
+/* ---------- browser mode ---------- */
+const hasDirectFolder = typeof window.showDirectoryPicker === "function";
+
+/* ---------- file IO ---------- */
+async function getHandleByPath(root, path, create=false){
+  const parts=path.split("/").filter(Boolean);
+  let dir=root;
+  for(let i=0;i<parts.length-1;i++) dir=await dir.getDirectoryHandle(parts[i],{create});
+  return await dir.getFileHandle(parts.at(-1),{create});
+}
+async function readDirectText(path){
+  const h=await getHandleByPath(state.rootHandle,path,false);
+  return await (await h.getFile()).text();
+}
+async function writeDirectText(path,text){
+  const h=await getHandleByPath(state.rootHandle,path,true);
+  const w=await h.createWritable();
+  await w.write(text); await w.close();
+}
+async function collectDirectFiles(dirHandle,prefix="",map=new Map()){
+  for await (const [name,h] of dirHandle.entries()){
+    const path=prefix?prefix+"/"+name:name;
+    if(h.kind==="directory") await collectDirectFiles(h,path,map);
+    else map.set(path,new Uint8Array(await (await h.getFile()).arrayBuffer()));
+  }
+  return map;
+}
+
+function readU16(view,off){return view.getUint16(off,true)}
+function readU32(view,off){return view.getUint32(off,true)}
+
+async function unzipToMap(file){
+  const buf=await file.arrayBuffer();
+  const view=new DataView(buf);
+  const bytes=new Uint8Array(buf);
+
+  // Find end-of-central-directory record by scanning backward.
+  let eocd=-1;
+  const min=Math.max(0,bytes.length-65557);
+  for(let i=bytes.length-22;i>=min;i--){
+    if(readU32(view,i)===0x06054b50){eocd=i;break}
+  }
+  if(eocd<0) throw new Error("ZIP directory not found.");
+
+  const total=readU16(view,eocd+10);
+  const centralOffset=readU32(view,eocd+16);
+  let off=centralOffset;
+  const out=new Map();
+
+  for(let n=0;n<total;n++){
+    if(readU32(view,off)!==0x02014b50) throw new Error("Invalid ZIP central directory.");
+    const method=readU16(view,off+10);
+    const compSize=readU32(view,off+20);
+    const uncompSize=readU32(view,off+24);
+    const nameLen=readU16(view,off+28);
+    const extraLen=readU16(view,off+30);
+    const commentLen=readU16(view,off+32);
+    const localOff=readU32(view,off+42);
+    const name=dec.decode(bytes.slice(off+46,off+46+nameLen));
+
+    if(!name.endsWith("/")){
+      if(readU32(view,localOff)!==0x04034b50) throw new Error("Invalid ZIP local header.");
+      const localNameLen=readU16(view,localOff+26);
+      const localExtraLen=readU16(view,localOff+28);
+      const dataStart=localOff+30+localNameLen+localExtraLen;
+      const compressed=bytes.slice(dataStart,dataStart+compSize);
+
+      let data;
+      if(method===0){
+        data=compressed;
+      }else if(method===8){
+        if(typeof DecompressionStream!=="function")
+          throw new Error("This browser cannot open compressed ZIP files. Re-export from this app or choose the unzipped folder.");
+        const ds=new DecompressionStream("deflate-raw");
+        const stream=new Blob([compressed]).stream().pipeThrough(ds);
+        data=new Uint8Array(await new Response(stream).arrayBuffer());
+      }else{
+        throw new Error("Unsupported ZIP compression method: "+method);
+      }
+      if(uncompSize!==data.length) {
+        // tolerate size mismatch only if browser decompression succeeded; still suspicious
+      }
+      out.set(name,data);
+    }
+    off+=46+nameLen+extraLen+commentLen;
+  }
+  return out;
+}
+
+function normalizeImportedMap(map){
+  // Our exports may include one top-level dataset folder. Strip it if present.
+  if(map.has("manifest.json")) return map;
+  const manifestKeys=[...map.keys()].filter(k=>k.endsWith("/manifest.json"));
+  if(manifestKeys.length===1){
+    const prefix=manifestKeys[0].slice(0,-"manifest.json".length);
+    const normalized=new Map();
+    for(const [k,v] of map){
+      if(k.startsWith(prefix)) normalized.set(k.slice(prefix.length),v);
+    }
+    return normalized;
+  }
+  return map;
+}
+
+async function openDataZip(){
+  if(typeof window.showOpenFilePicker==="function"){
+    try{
+      const handles=await window.showOpenFilePicker({
+        multiple:false,
+        types:[{
+          description:"Boat Maintenance Data ZIP",
+          accept:{"application/zip":[".zip"]}
+        }]
+      });
+      if(!handles?.length)return;
+      const handle=handles[0];
+      const file=await handle.getFile();
+      await importZip(file,handle);
+      return;
+    }catch(e){
+      if(e.name==="AbortError")return;
+      console.warn("Native ZIP picker failed; using browser file input.",e);
+    }
+  }
+  $("#importZipInput").click();
+}
+
+async function importZip(file,fileHandle=null){
+  if(!file)return;
+  try{
+    let map=await unzipToMap(file);
+    map=normalizeImportedMap(map);
+    const texts=new Map();
+    for(const path of Object.values(requiredPaths)){
+      if(!map.has(path)) throw new Error("Missing "+path);
+      texts.set(path,dec.decode(map.get(path)));
+    }
+    const incoming=parseLoadedTexts(texts);
+
+    // Protect a newer browser working copy from being silently replaced by an older ZIP.
+    const currentManifest=state.files?.manifest;
+    const incomingManifest=incoming.manifest;
+    if(currentManifest?.dataset_id && currentManifest.dataset_id===incomingManifest?.dataset_id){
+      const currentTime=Date.parse(currentManifest.modified_at||"");
+      const incomingTime=Date.parse(incomingManifest.modified_at||"");
+      if(Number.isFinite(currentTime) && Number.isFinite(incomingTime) && incomingTime<currentTime){
+        const currentLabel=new Date(currentTime).toLocaleString();
+        const incomingLabel=new Date(incomingTime).toLocaleString();
+        const ok=confirm(
+          "This ZIP is older than your current working copy.\n\n"+
+          "Selected ZIP: "+incomingLabel+"\n"+
+          "Current working copy: "+currentLabel+"\n\n"+
+          "Opening the older ZIP would replace the newer working copy in this browser. Continue?"
+        );
+        if(!ok)return;
+      }
+    }
+
+    state.mode="import";
+    state.rootHandle=null;
+    state.importedFiles=map;
+    state.files=incoming;
+    state.dirty=Boolean(state.lastLoadMigrated);
+    state.zipFileHandle=fileHandle||null;
+    state.zipFileName=file.name||null;
+    state.lastSaveMode=null;
+    afterLoad();
+    await cacheWorkingCopy();
+  }catch(e){
+    alert("Could not import that ZIP.\n\n"+e.message);
+  }
+}
+
+function parseJSONL(text){return text.split(/\r?\n/).filter(x=>x.trim()).map(x=>JSON.parse(x))}
+function stringifyJSONL(arr){return arr.map(x=>JSON.stringify(x)).join("\n")+"\n"}
+function parseLoadedTexts(texts){
+  const f={};
+  f.manifest=JSON.parse(texts.get(requiredPaths.manifest));
+  f.vessel=JSON.parse(texts.get(requiredPaths.vessel));
+  f.equipment=JSON.parse(texts.get(requiredPaths.equipment));
+  f.meters=JSON.parse(texts.get(requiredPaths.meters));
+  f.maintenance_tasks=JSON.parse(texts.get(requiredPaths.maintenance_tasks));
+  f.parts=JSON.parse(texts.get(requiredPaths.parts));
+  f.parties=JSON.parse(texts.get(requiredPaths.parties));
+  f.attachments=JSON.parse(texts.get(requiredPaths.attachments));
+  f.service_history=parseJSONL(texts.get(requiredPaths.service_history)||"");
+  f.meter_readings=parseJSONL(texts.get(requiredPaths.meter_readings)||"");
+
+  let migrated=false;
+  // v1.2 removes financial/time-accounting fields from service history.
+  f.service_history.forEach(ev=>{
+    if(Object.prototype.hasOwnProperty.call(ev,"cost")){delete ev.cost;migrated=true}
+    if(Object.prototype.hasOwnProperty.call(ev,"labor_hours")){delete ev.labor_hours;migrated=true}
+  });
+
+  const targetSchema="1.2.0";
+  if(f.manifest.schema_version!==targetSchema){
+    f.manifest.schema_version=targetSchema;
+    migrated=true;
+  }
+  [f.vessel,f.equipment,f.meters,f.maintenance_tasks,f.parts,f.parties,f.attachments].forEach(doc=>{
+    if(doc && doc.schema_version && doc.schema_version!==targetSchema){doc.schema_version=targetSchema;migrated=true}
+    (doc?.records||[]).forEach(rec=>{
+      if(rec.schema_version && rec.schema_version!==targetSchema){rec.schema_version=targetSchema;migrated=true}
+    });
+  });
+  [...f.service_history,...f.meter_readings].forEach(rec=>{
+    if(rec.schema_version!==targetSchema){rec.schema_version=targetSchema;migrated=true}
+  });
+  state.lastLoadMigrated=migrated;
+  return f;
+}
+function serializeCoreFiles(){
+  const map=new Map();
+  map.set(requiredPaths.manifest,JSON.stringify(state.files.manifest,null,2)+"\n");
+  ["vessel","equipment","meters","maintenance_tasks","parts","parties","attachments"].forEach(k=>{
+    map.set(requiredPaths[k],JSON.stringify(state.files[k],null,2)+"\n");
+  });
+  map.set(requiredPaths.service_history,stringifyJSONL(state.files.service_history));
+  map.set(requiredPaths.meter_readings,stringifyJSONL(state.files.meter_readings));
+  return map;
+}
+async function openDirectFolder(){
+  try{
+    const handle=await window.showDirectoryPicker({mode:"readwrite"});
+    state.rootHandle=handle; state.mode="direct";
+    const texts=new Map();
+    for(const path of Object.values(requiredPaths)) texts.set(path,await readDirectText(path));
+    state.files=parseLoadedTexts(texts);
+    state.importedFiles=new Map();
+    state.dirty=Boolean(state.lastLoadMigrated); afterLoad(); await cacheWorkingCopy();
+  }catch(e){
+    if(e.name!=="AbortError") alert("Could not open that folder.\n\nChoose the dataset folder that contains manifest.json.\n\n"+e.message);
+  }
+}
+async function importFolder(fileList){
+  const map=new Map();
+  for(const file of [...fileList]){
+    const rel=(file.webkitRelativePath||file.name).replace(/^[^/]+\//,"");
+    map.set(rel,new Uint8Array(await file.arrayBuffer()));
+  }
+  const texts=new Map();
+  try{
+    for(const path of Object.values(requiredPaths)){
+      if(!map.has(path)) throw new Error("Missing "+path);
+      texts.set(path,dec.decode(map.get(path)));
+    }
+    state.mode="import"; state.rootHandle=null; state.importedFiles=map;
+    state.files=parseLoadedTexts(texts); state.dirty=Boolean(state.lastLoadMigrated); afterLoad(); await cacheWorkingCopy();
+  }catch(e){ alert("That does not look like a Boat Maintenance Data folder.\n\n"+e.message); }
+}
+async function persistAll(){
+  if(!state.files.manifest)return;
+  state.files.manifest.modified_at=new Date().toISOString();
+  if(state.mode==="direct"){
+    const core=serializeCoreFiles();
+    for(const [path,text] of core) await writeDirectText(path,text);
+    state.dirty=false; updateHeader();
+  }else{
+    state.dirty=true; updateHeader();
+  }
+  await cacheWorkingCopy();
+}
+function markChanged(){ state.dirty=true; persistAll().catch(e=>alert("Save failed: "+e.message)); }
+
+/* ---------- maintenance logic ---------- */
+function equipmentById(id){return state.files.equipment.records.find(x=>x.id===id)}
+function meterById(id){return state.files.meters.records.find(x=>x.id===id)}
+function taskById(id){return state.files.maintenance_tasks.records.find(x=>x.id===id)}
+function latestReading(meterId,atOrBefore=null){
+  const rows=state.files.meter_readings.filter(r=>r.meter_id===meterId && (!atOrBefore || r.observed_at.slice(0,10)<=atOrBefore));
+  rows.sort((a,b)=>a.observed_at.localeCompare(b.observed_at));
+  return rows.at(-1)||null;
+}
+function latestCompletion(taskId){
+  return state.files.service_history.filter(s=>(s.completed_task_ids||[]).includes(taskId))
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||"")).at(-1)||null;
+}
+function serviceMeterValue(service,meterId){
+  return (service?.meter_values||[]).find(x=>x.meter_id===meterId)||null;
+}
+function completionMeterBasis(task,completion,meterId){
+  if(!completion) return (task.baseline?.meter_values||[]).find(x=>x.meter_id===meterId)||null;
+  const exact=serviceMeterValue(completion,meterId);
+  if(exact) return exact;
+  // If work was logged without a meter value, use the latest known reading
+  // at or before the service date. Do NOT fall back to the original task baseline.
+  const prior=latestReading(meterId,completion.date);
+  if(prior) return {meter_id:meterId,value:prior.value,unit:prior.unit,quality:prior.quality||"estimated"};
+  return null;
+}
+
+function defaultWarningForTrigger(t,basisDate=null){
+  if(t.warning?.value) return Number(t.warning.value);
+  if(t.type==="meter") return Math.max(Number(t.interval)*0.10, 1);
+  if(t.type==="calendar"){
+    const mult={days:1,weeks:7,months:30.4375,years:365.25}[t.unit]||1;
+    return Math.max(Number(t.interval)*mult*0.10,1);
+  }
+  if(t.type==="date") return 14;
+  if(t.type==="meter_value") return Math.max(Math.abs(Number(t.due_value))*0.05,1);
+  return 1;
+}
+function triggerUrgencyRatio(task,t,completion){
+  const basisDate=completion?.date || task.baseline?.date || null;
+  const now=parseDateOnly(todayISO());
+
+  if(t.type==="calendar"){
+    if(!basisDate) return Infinity;
+    const due=addCalendar(parseDateOnly(basisDate),Number(t.interval),t.unit);
+    const rem=daysBetween(now,due);
+    const warn=t.warning ? warningToDays(t.warning) : defaultWarningForTrigger(t,basisDate);
+    return rem/Math.max(warn,0.0001);
+  }
+  if(t.type==="meter"){
+    const baseMv=completionMeterBasis(task,completion,t.meter_id);
+    const current=latestReading(t.meter_id);
+    if(!baseMv || !current) return Infinity;
+    const rem=(Number(baseMv.value)+Number(t.interval))-Number(current.value);
+    const warn=Number(t.warning?.value||defaultWarningForTrigger(t));
+    return rem/Math.max(warn,0.0001);
+  }
+  if(t.type==="date"){
+    const due=parseDateOnly(t.due_date);
+    const rem=daysBetween(now,due);
+    const warn=t.warning ? warningToDays(t.warning) : defaultWarningForTrigger(t);
+    return rem/Math.max(warn,0.0001);
+  }
+  if(t.type==="meter_value"){
+    const current=latestReading(t.meter_id);
+    if(!current) return Infinity;
+    const rem=Number(t.due_value)-Number(current.value);
+    const warn=Number(t.warning?.value||defaultWarningForTrigger(t));
+    return rem/Math.max(warn,0.0001);
+  }
+  return Infinity;
+}
+function taskUrgency(task){
+  const completion=latestCompletion(task.id);
+  if(task.task_kind==="one_time" && completion) return Infinity;
+  const vals=(task.schedule?.triggers||[]).map(t=>triggerUrgencyRatio(task,t,completion)).filter(Number.isFinite);
+  return vals.length?Math.min(...vals):Infinity;
+}
+function addCalendar(date,interval,unit){
+  const d=new Date(date);
+  if(unit==="days") d.setDate(d.getDate()+interval);
+  if(unit==="weeks") d.setDate(d.getDate()+interval*7);
+  if(unit==="months"){
+    const day=d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+interval);
+    const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); d.setDate(Math.min(day,last));
+  }
+  if(unit==="years"){
+    const m=d.getMonth(),day=d.getDate(); d.setDate(1); d.setFullYear(d.getFullYear()+interval); d.setMonth(m);
+    const last=new Date(d.getFullYear(),m+1,0).getDate(); d.setDate(Math.min(day,last));
+  }
+  return d;
+}
+function daysBetween(a,b){return Math.ceil((b-a)/86400000)}
+function taskStatus(task){
+  if(!task.active) return {rank:9,status:"inactive",label:"Inactive",details:[]};
+  const completion=latestCompletion(task.id);
+  if(task.task_kind==="one_time" && completion) return {rank:8,status:"complete",label:"Complete",details:["Completed "+fmtDate(completion.date)]};
+
+  const basisDate=completion?.date || task.baseline?.date || null;
+  const details=[]; let worst={rank:0,status:"ok",label:"Not due"};
+  const now=parseDateOnly(todayISO());
+
+  for(const t of (task.schedule?.triggers||[])){
+    if(t.type==="calendar"){
+      if(!basisDate){details.push("Calendar due: unknown"); worst=Math.max(worst.rank,1)===1?{rank:1,status:"unknown",label:"Needs info"}:worst;continue}
+      const due=addCalendar(parseDateOnly(basisDate),Number(t.interval),t.unit);
+      const rem=daysBetween(now,due);
+      details.push("Due "+fmtDateObj(due)+" ("+(rem>=0?rem+" days":"overdue "+Math.abs(rem)+" days")+")");
+      const warnDays=t.warning ? warningToDays(t.warning) : 0;
+      if(rem<0) worst=pickWorse(worst,{rank:4,status:"overdue",label:"Overdue"});
+      else if(rem===0) worst=pickWorse(worst,{rank:3,status:"soon",label:"Due now"});
+      else if(warnDays && rem<=warnDays) worst=pickWorse(worst,{rank:2,status:"soon",label:"Due soon"});
+    }else if(t.type==="meter"){
+      const baseMv=completionMeterBasis(task,completion,t.meter_id);
+      const current=latestReading(t.meter_id);
+      if(!baseMv || !current){details.push("Meter due: unknown"); worst=pickWorse(worst,{rank:1,status:"unknown",label:"Needs info"});continue}
+      const freshness=readingFreshness(current);
+      if(freshness.level==="stale") details.push("⚠ "+freshness.label);
+      else if(freshness.level==="aging") details.push(freshness.label);
+      const due=Number(baseMv.value)+Number(t.interval), rem=due-Number(current.value);
+      const meter=meterById(t.meter_id), unit=t.unit||meter?.unit||"";
+      const displayUnit=unit==="hours"?"operating hours":unit;
+      details.push("Due at "+num(due)+" "+displayUnit+" ("+(rem>=0?num(rem)+" "+displayUnit+" remaining":num(Math.abs(rem))+" "+displayUnit+" overdue")+")");
+      const warn=Number(t.warning?.value||0);
+      if(rem<0) worst=pickWorse(worst,{rank:4,status:"overdue",label:"Overdue"});
+      else if(rem===0) worst=pickWorse(worst,{rank:3,status:"soon",label:"Due now"});
+      else if(warn && rem<=warn) worst=pickWorse(worst,{rank:2,status:"soon",label:"Due soon"});
+    }else if(t.type==="date"){
+      const due=parseDateOnly(t.due_date),rem=daysBetween(now,due);
+      details.push("Due "+fmtDate(t.due_date)+(rem>=0?" ("+rem+" days)":" (overdue "+Math.abs(rem)+" days)"));
+      const warnDays=t.warning ? warningToDays(t.warning) : 0;
+      if(rem<0) worst=pickWorse(worst,{rank:4,status:"overdue",label:"Overdue"});
+      else if(rem===0) worst=pickWorse(worst,{rank:3,status:"soon",label:"Due now"});
+      else if(warnDays && rem<=warnDays) worst=pickWorse(worst,{rank:2,status:"soon",label:"Due soon"});
+    }else if(t.type==="meter_value"){
+      const current=latestReading(t.meter_id);
+      if(!current){details.push("Meter due: unknown");worst=pickWorse(worst,{rank:1,status:"unknown",label:"Needs info"});continue}
+      const freshness=readingFreshness(current);
+      if(freshness.level==="stale") details.push("⚠ "+freshness.label);
+      else if(freshness.level==="aging") details.push(freshness.label);
+      const rem=Number(t.due_value)-Number(current.value);
+      const displayUnit=t.unit==="hours"?"operating hours":t.unit;
+      details.push("Due at "+num(t.due_value)+" "+displayUnit+" ("+(rem>=0?num(rem)+" "+displayUnit+" remaining":num(Math.abs(rem))+" "+displayUnit+" overdue")+")");
+      const warn=Number(t.warning?.value||0);
+      if(rem<0) worst=pickWorse(worst,{rank:4,status:"overdue",label:"Overdue"});
+      else if(rem===0) worst=pickWorse(worst,{rank:3,status:"soon",label:"Due now"});
+      else if(warn && rem<=warn) worst=pickWorse(worst,{rank:2,status:"soon",label:"Due soon"});
+    }
+  }
+  if(task.defer_until && worst.rank>=3) worst.label += " (deferred)";
+  return {...worst,details,completion,urgency:taskUrgency(task)};
+}
+function warningToDays(w){const n=Number(w.value||0);return w.unit==="weeks"?n*7:w.unit==="months"?n*30:w.unit==="years"?n*365:n}
+function pickWorse(a,b){return b.rank>a.rank?b:a}
+function containsSearch(parts,query){
+  const q=String(query||"").trim().toLowerCase();
+  if(!q)return true;
+  return parts.filter(Boolean).join(" ").toLowerCase().includes(q);
+}
+function taskMatchesSearch(task,query){
+  const eq=equipmentById(task.equipment_id);
+  return containsSearch([task.title,task.category,eq?.name,eq?.manufacturer,eq?.model,schedulePlain(task)],query);
+}
+
+
+function selectorEscape(s){
+  if(window.CSS?.escape)return CSS.escape(String(s));
+  return String(s).replace(/["\\]/g,"\\$&");
+}
+function restoreListScroll(viewSelector,scrollTop,detailButtonSelector){
+  const view=$(viewSelector);
+  if(!view)return;
+  const pane=view.querySelector(".table-scroll");
+  if(!pane)return;
+  pane.scrollTop=scrollTop;
+  if(!detailButtonSelector)return;
+
+  const btn=view.querySelector(detailButtonSelector);
+  if(!btn)return;
+  const row=btn.closest("tr");
+  const detail=row?.nextElementSibling?.classList.contains("detail-row") ? row.nextElementSibling : row;
+  if(!detail)return;
+
+  const paneRect=pane.getBoundingClientRect();
+  const detailRect=detail.getBoundingClientRect();
+
+  // Adjust ONLY the internal pane. Do not scroll the page.
+  if(detailRect.bottom>paneRect.bottom){
+    pane.scrollTop += detailRect.bottom-paneRect.bottom+10;
+  }else if(row?.getBoundingClientRect().top<paneRect.top){
+    pane.scrollTop -= paneRect.top-row.getBoundingClientRect().top+10;
+  }
+}
+
+function taskSourceText(task){
+  const src=task?.source;
+  if(!src)return "";
+  if(typeof src==="string")return src;
+  return src.reference||src.name||src.type||"";
+}
+function taskSourceHtml(task){
+  const text=taskSourceText(task);
+  if(!text)return "—";
+  if(/^https?:\/\//i.test(text)){
+    return `<a href="${esc(text)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+  }
+  return esc(text);
+}
+function taskDetailHtml(task,status,context){
+  const procedure=(task.procedure||"").trim();
+  const notes=(task.notes||"").trim();
+  const source=taskSourceHtml(task);
+  const next=status?.details?.length ? status.details.map(esc).join("<br>") : "—";
+  const schedule=esc(schedulePlain(task)||"—");
+  const completion=latestCompletion(task.id);
+  return `<div class="task-detail">
+    <div class="task-detail-grid">
+      <div>
+        <h3>Procedure / notes</h3>
+        ${procedure?`<div class="task-detail-text">${esc(procedure)}</div>`:'<div class="small muted">No procedure recorded.</div>'}
+        ${notes?`<div style="margin-top:12px"><h3>Specifications / notes</h3><div class="task-detail-text">${esc(notes)}</div></div>`:""}
+      </div>
+      <div class="task-detail-meta">
+        <div class="meta-block"><span class="meta-label">Schedule</span>${schedule}</div>
+        <div class="meta-block"><span class="meta-label">Current due basis</span>${next}</div>
+        ${completion?`<div class="meta-block"><span class="meta-label">Last completed</span>${fmtDate(completion.date)}</div>`:""}
+        <div class="meta-block"><span class="meta-label">Source / reference</span>${source}</div>
+        <div class="task-actions" style="justify-content:flex-start">
+          ${context==="dashboard"?`<button type="button" class="primary" data-detail-log="${esc(task.id)}">Log work</button>`:""}
+          ${context==="schedule"?`<button type="button" data-detail-edit="${esc(task.id)}">Edit schedule</button>`:""}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function taskExpanded(context,id){
+  const arr=context==="dashboard"?state.dashboardExpandedTasks:state.scheduleExpandedTasks;
+  return arr.includes(id);
+}
+function toggleTaskExpanded(context,id){
+  const key=context==="dashboard"?"dashboardExpandedTasks":"scheduleExpandedTasks";
+  const arr=state[key];
+  state[key]=arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];
+}
+
+function statusFilterMatch(st,filter){
+  if(filter==="all") return true;
+  if(filter==="overdue") return st.status==="overdue";
+  if(filter==="soon") return st.status==="soon";
+  if(filter==="notdue") return st.status==="ok";
+  if(filter==="needsinfo") return st.status==="unknown";
+  return true;
+}
+function taskSortRows(rows){
+  rows.sort((a,b)=>{
+    const rankDiff=(b.s.rank??0)-(a.s.rank??0);
+    if(rankDiff) return rankDiff;
+    const au=Number.isFinite(a.s.urgency)?a.s.urgency:Infinity;
+    const bu=Number.isFinite(b.s.urgency)?b.s.urgency:Infinity;
+    if(au!==bu) return au-bu;
+    return a.t.title.localeCompare(b.t.title);
+  });
+  return rows;
+}
+function schedulePlain(task){
+  const out=[];
+  for(const t of task.schedule?.triggers||[]){
+    if(t.type==="meter"){
+      const unit=t.unit==="hours"?"operating hours":t.unit;
+      out.push(`Every ${t.interval} ${unit}`);
+    }
+    else if(t.type==="calendar"){
+      const unit=t.unit==="months"?"calendar months":t.unit==="years"?"calendar years":t.unit;
+      out.push(`Every ${t.interval} ${unit}`);
+    }
+    else if(t.type==="date") out.push(`By ${fmtDate(t.due_date)}`);
+    else if(t.type==="meter_value") out.push(`At ${num(t.due_value)} ${t.unit}`);
+  }
+  return out.join(" or ")||"No schedule";
+}
+
+/* ---------- render ---------- */
+function afterLoad(){
+  $("#noData").classList.add("hidden");
+  $$(".view").forEach(x=>x.classList.add("hidden"));
+  $("#dashboard").classList.remove("hidden");
+  $$("nav button").forEach(x=>x.classList.toggle("active",x.dataset.view==="dashboard"));
+  $("#exportBtn").disabled=false;
+  updateHeader(); renderAll();
+}
+function updateHeader(){
+  if(!state.files.vessel){$("#datasetStatus").textContent="No boat data loaded";return}
+  const v=state.files.vessel.record;
+  $("#appTitle").textContent=v.name ? v.name+" Maintenance" : "Boat Maintenance Log";
+  const fileLabel=state.zipFileName?state.zipFileName:"Data ZIP";
+  const dirty=state.dirty?" • unsaved changes":"";
+  const saveNote=state.lastSaveMode==="download"?" • last save downloaded a new copy":"";
+  $("#datasetStatus").innerHTML=`<span class="status-dot ${state.dirty?"dirty":"live"}"></span>${esc(fileLabel)}${dirty}${saveNote}`;
+  if($("#exportBtn")){
+    $("#exportBtn").textContent = state.zipFileHandle ? "Save Data ZIP" :
+      (typeof window.showSaveFilePicker==="function" ? "Save Data ZIP…" : "Download Data ZIP");
+  }
+}
+function showView(name){
+  if(!state.files.vessel)return;
+  $$("nav button").forEach(x=>x.classList.toggle("active",x.dataset.view===name));
+  $$(".view").forEach(x=>x.classList.add("hidden"));
+  $("#"+name).classList.remove("hidden");
+}
+function startLogForTask(taskId){
+  state.logPrefillTaskId=taskId;
+  renderLog();
+  showView("log");
+  setTimeout(()=>$("#logForm")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+}
+function renderAll(){renderDashboard();renderLog();renderHistory();renderEquipment();renderMaintenance();renderMeters();}
+
+function renderDashboard(){
+  let statuses=state.files.maintenance_tasks.records
+    .filter(t=>t.active && !(t.task_kind==="one_time" && latestCompletion(t.id)))
+    .map(t=>({t,s:taskStatus(t)}));
+  taskSortRows(statuses);
+
+  const latestMeters=state.files.meters.records.map(m=>({m,r:latestReading(m.id)}));
+
+  const searched=statuses.filter(({t})=>taskMatchesSearch(t,state.dashboardMaintenanceSearch));
+  let shown;
+  if(state.dashboardMaintenanceMode==="all"){
+    shown=searched;
+  }else{
+    const attention=searched.filter(({s})=>["overdue","soon","unknown"].includes(s.status));
+    const upcoming=searched.filter(({s})=>s.status==="ok").slice(0,10);
+    shown=[...attention,...upcoming];
+  }
+
+  const allRecent=state.files.service_history.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const recent=state.recentWorkExpanded?allRecent:allRecent.slice(0,8);
+
+  $("#dashboard").innerHTML=`
+  <div class="grid">
+    <div class="dashboard-left-stack">
+      <div class="card">
+        <div class="list-head">
+          <div>
+            <h2>Upcoming maintenance</h2>
+            <div class="small muted">Sorted by urgency. Expand Details for procedure, specifications, and source; Log records the work.</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="grow">
+            <label>Search</label>
+            <input id="dashboardMaintenanceSearch" type="search" placeholder="Search maintenance or equipment…" value="${esc(state.dashboardMaintenanceSearch)}">
+          </div>
+          <div>
+            <label>Show</label>
+            <div style="display:flex;gap:6px">
+              <button type="button" id="dashboardPriorityBtn" class="${state.dashboardMaintenanceMode==="priority"?"active-filter":""}">Priority</button>
+              <button type="button" id="dashboardAllBtn" class="${state.dashboardMaintenanceMode==="all"?"active-filter":""}">All</button>
+            </div>
+          </div>
+          <div class="result-count">${shown.length} of ${searched.length} shown</div>
+        </div>
+        <div class="table-scroll">
+        ${shown.length?`<table><thead><tr><th>Item</th><th>Equipment</th><th>Status</th><th>Next</th><th>Actions</th></tr></thead><tbody>
+        ${shown.map(({t,s})=>{
+          const loggable=!(t.task_kind==="one_time" && latestCompletion(t.id));
+          const expanded=taskExpanded("dashboard",t.id);
+          return `<tr>
+            <td><strong>${esc(t.title)}</strong><div class="small muted">${esc(schedulePlain(t))}</div></td>
+            <td>${esc(equipmentById(t.equipment_id)?.name||"—")}</td>
+            <td><span class="badge ${s.status}">${esc(s.label)}</span></td>
+            <td class="small">${s.details.map(esc).join("<br>")}</td>
+            <td><div class="task-actions">
+              <button type="button" data-dashboard-details="${esc(t.id)}" aria-expanded="${expanded}">${expanded?"Hide details":"Details"}</button>
+              ${loggable?`<button class="log-btn" type="button" data-log-button="${esc(t.id)}">Log</button>`:""}
+            </div></td>
+          </tr>
+          ${expanded?`<tr class="detail-row"><td colspan="5">${taskDetailHtml(t,s,"dashboard")}</td></tr>`:""}`;
+        }).join("")}
+        </tbody></table>`:`<div class="empty">No matching maintenance items.</div>`}
+        </div>
+        ${state.dashboardMaintenanceMode==="priority"?'<div class="small muted" style="margin-top:9px">Priority shows overdue, due soon, items needing information, plus the next 10 upcoming items.</div>':""}
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <div>
+            <h2>Recently completed</h2>
+            <div class="small muted">Latest entries from Work History.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            ${allRecent.length>8?`<button type="button" id="toggleRecentWorkBtn">${state.recentWorkExpanded?"Show recent only":"View all"}</button>`:""}
+            <button type="button" id="dashboardLogWorkBtn">Log work</button>
+          </div>
+        </div>
+        <div class="table-scroll compact">
+        ${recent.length?`<table><thead><tr><th>Date</th><th>Work</th><th>Equipment</th><th>Notes</th></tr></thead><tbody>
+        ${recent.map(ev=>`<tr>
+          <td>${fmtDate(ev.date)}</td>
+          <td><strong>${esc(ev.summary||"")}</strong></td>
+          <td>${(ev.equipment_ids||[]).map(id=>equipmentById(id)?.name).filter(Boolean).map(esc).join(", ")||"—"}</td>
+          <td class="small muted">${esc(ev.notes||"")}</td>
+        </tr>`).join("")}
+        </tbody></table>`:`<div class="empty">No work logged yet.</div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-right-stack">
+      <div class="card">
+        <h2>Current hours & meters</h2>
+        <div class="small muted" style="margin:-7px 0 8px">${latestMeters.length} meters • update readings here as part of your normal dashboard routine.</div>
+        <div class="dashboard-meter-scroll">
+        ${latestMeters.map(({m,r})=>{const f=readingFreshness(r);return `
+          <form class="dashboard-meter-row" data-dashboard-meter-form="${esc(m.id)}">
+            <div class="dashboard-meter-name">
+              <strong>${esc(m.name)}</strong>
+              <div>${r?num(Math.round(r.value),0)+" "+esc(r.unit):"No reading"}</div>
+              <div class="meter-age ${f.level==="stale"?"stale":f.level==="aging"?"aging":"muted"}">${r?fmtObservedAt(r.observed_at):"No reading"}${f.level==="stale"?" • Meter stale":f.level==="aging"?" • Aging":""}</div>
+            </div>
+            <div>
+              <label>New reading</label>
+              <input type="number" step="1" min="0" name="value" placeholder="${r?esc(String(Math.round(r.value))):""}" required>
+            </div>
+            <div>
+              <label>Date</label>
+              <input type="date" name="date" value="${todayISO()}" required>
+            </div>
+            <div><button type="submit">Update</button></div>
+          </form>`}).join("")||'<div class="empty">No meters configured.</div>'}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  $$("[data-dashboard-details]").forEach(btn=>btn.addEventListener("click",()=>{
+    const id=btn.dataset.dashboardDetails;
+    const pane=$("#dashboard")?.querySelector(".table-scroll");
+    const scrollTop=pane?.scrollTop||0;
+    toggleTaskExpanded("dashboard",id);
+    renderDashboard();
+    requestAnimationFrame(()=>restoreListScroll("#dashboard",scrollTop,`[data-dashboard-details="${selectorEscape(id)}"]`));
+  }));
+  $$("[data-log-button]").forEach(btn=>btn.onclick=e=>{e.stopPropagation();startLogForTask(btn.dataset.logButton)});
+  $$("[data-detail-log]").forEach(btn=>btn.onclick=()=>startLogForTask(btn.dataset.detailLog));
+  $("#dashboardLogWorkBtn")?.addEventListener("click",()=>{state.logPrefillTaskId=null;renderLog();showView("log")});
+  $("#toggleRecentWorkBtn")?.addEventListener("click",()=>{state.recentWorkExpanded=!state.recentWorkExpanded;renderDashboard()});
+  $("#dashboardPriorityBtn")?.addEventListener("click",()=>{state.dashboardMaintenanceMode="priority";renderDashboard()});
+  $("#dashboardAllBtn")?.addEventListener("click",()=>{state.dashboardMaintenanceMode="all";renderDashboard()});
+  $("#dashboardMaintenanceSearch")?.addEventListener("input",e=>{
+    state.dashboardMaintenanceSearch=e.target.value;
+    renderDashboard();
+    const input=$("#dashboardMaintenanceSearch");
+    if(input){input.focus();input.setSelectionRange(input.value.length,input.value.length)}
+  });
+  $$("[data-dashboard-meter-form]").forEach(form=>form.addEventListener("submit",e=>{
+    e.preventDefault();
+    const meterId=form.dataset.dashboardMeterForm;
+    const m=meterById(meterId);
+    const fd=new FormData(form);
+    const v=Math.round(Number(fd.get("value")));
+    const d=fd.get("date");
+    if(!m || !Number.isFinite(v) || v<0 || !d) return;
+    const last=latestReading(m.id);
+    if(m.monotonic && last && v<Math.round(last.value) && !confirm(`This is lower than the previous reading (${Math.round(last.value)}). Save anyway?`)) return;
+    state.files.meter_readings.push({
+      record_type:"meter_reading",
+      schema_version:state.files.manifest.schema_version,
+      id:uid("read"),
+      meter_id:m.id,
+      observed_at:d,
+      value:v,
+      displayed_value:v,
+      unit:m.unit,
+      source:"manual",
+      service_event_id:null,
+      quality:"exact",
+      event:"observation",
+      notes:"Dashboard update"
+    });
+    markChanged();
+    renderAll();
+  }));
+}
+
+
+function csvCell(v){
+  const text=String(v??"");
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g,'""')}"` : text;
+}
+function serviceEquipmentNames(ev){
+  return (ev.equipment_ids||[]).map(id=>equipmentById(id)?.name).filter(Boolean);
+}
+function completedTaskNames(ev){
+  return (ev.completed_task_ids||[]).map(id=>taskById(id)?.title).filter(Boolean);
+}
+function serviceMeterText(ev){
+  return (ev.meter_values||[]).map(x=>{
+    const meter=meterById(x.meter_id);
+    const rawUnit=x.unit||meter?.unit||"";
+    const displayUnit=rawUnit==="hours"?"operating hours":rawUnit;
+    return `${meter?.name||x.meter_id}: ${num(x.value)} ${displayUnit}`.trim();
+  }).join("; ");
+}
+function filteredHistory(){
+  let rows=state.files.service_history.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const q=String(state.historySearch||"").trim().toLowerCase();
+  return rows.filter(ev=>{
+    const equipment=serviceEquipmentNames(ev);
+    const tasks=completedTaskNames(ev);
+    if(state.historyEquipmentFilter!=="all" && !(ev.equipment_ids||[]).includes(state.historyEquipmentFilter)) return false;
+    if(state.historyFromDate && (ev.date||"")<state.historyFromDate) return false;
+    if(state.historyToDate && (ev.date||"")>state.historyToDate) return false;
+    if(q){
+      const haystack=[
+        ev.summary,ev.notes,equipment.join(" "),tasks.join(" "),serviceMeterText(ev)
+      ].filter(Boolean).join(" ").toLowerCase();
+      if(!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+}
+function exportHistoryCsv(){
+  const rows=filteredHistory();
+  const headers=[
+    "Date","Work","Equipment","Scheduled items completed","Meter readings","Notes"
+  ];
+  const lines=[headers.map(csvCell).join(",")];
+  rows.forEach(ev=>{
+    lines.push([
+      ev.date||"",
+      ev.summary||"",
+      serviceEquipmentNames(ev).join("; "),
+      completedTaskNames(ev).join("; "),
+      serviceMeterText(ev),
+      ev.notes||""
+    ].map(csvCell).join(","));
+  });
+  const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const vessel=(state.files.vessel.record.name||"boat").replace(/[^a-z0-9_-]+/gi,"-").replace(/^-|-$/g,"");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`${vessel}-work-history.csv`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function renderHistory(){
+  const rows=filteredHistory();
+  const all=state.files.service_history;
+  const eqOptions=state.files.equipment.records
+    .filter(eq=>all.some(ev=>(ev.equipment_ids||[]).includes(eq.id)))
+    .slice().sort((a,b)=>a.name.localeCompare(b.name));
+
+  $("#history").innerHTML=`
+  <div class="grid">
+    <div class="card span-12">
+      <div class="list-head">
+        <div>
+          <h2>Work history</h2>
+          <div class="small muted">Complete maintenance and repair record.</div>
+        </div>
+        <button type="button" id="exportHistoryBtn">Export CSV</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="grow">
+          <label>Search history</label>
+          <input id="historySearch" type="search" placeholder="Work, equipment, notes…" value="${esc(state.historySearch)}">
+        </div>
+        <div class="short">
+          <label>Equipment</label>
+          <select id="historyEquipmentFilter">
+            <option value="all">All equipment</option>
+            ${eqOptions.map(eq=>`<option value="${esc(eq.id)}" ${state.historyEquipmentFilter===eq.id?"selected":""}>${esc(eq.name)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="short">
+          <label>From</label>
+          <input id="historyFromDate" type="date" value="${esc(state.historyFromDate)}">
+        </div>
+        <div class="short">
+          <label>To</label>
+          <input id="historyToDate" type="date" value="${esc(state.historyToDate)}">
+        </div>
+        <div class="result-count">${rows.length} of ${all.length} records</div>
+      </div>
+
+      <div class="history-summary">
+        <div class="summary-item"><strong>${rows.length}</strong> records shown</div>
+      </div>
+
+      <div class="table-scroll">
+        ${rows.length?`<table>
+          <thead><tr>
+            <th>Date</th><th>Work</th><th>Equipment</th><th>Completed schedule</th><th>Meter</th><th>Notes</th>
+          </tr></thead>
+          <tbody>
+          ${rows.map(ev=>{
+            const eq=serviceEquipmentNames(ev);
+            const completed=completedTaskNames(ev);
+            const meters=serviceMeterText(ev);
+            return `<tr>
+              <td>${fmtDate(ev.date)}</td>
+              <td><strong>${esc(ev.summary||"")}</strong></td>
+              <td>${eq.length?eq.map(esc).join("<br>"):"—"}</td>
+              <td class="small">${completed.length?completed.map(esc).join("<br>"):"—"}</td>
+              <td class="small">${meters?esc(meters):"—"}</td>
+              <td class="small muted">${esc(ev.notes||"")}</td>
+            </tr>`;
+          }).join("")}
+          </tbody>
+        </table>`:`<div class="empty">No work-history records match these filters.</div>`}
+      </div>
+      <div class="small muted" style="margin-top:9px">Export CSV exports all currently filtered records, not just the rows visible in the scroll pane.</div>
+    </div>
+  </div>`;
+
+  $("#exportHistoryBtn")?.addEventListener("click",exportHistoryCsv);
+  $("#historySearch")?.addEventListener("input",e=>{
+    state.historySearch=e.target.value;
+    renderHistory();
+    const i=$("#historySearch"); if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}
+  });
+  $("#historyEquipmentFilter")?.addEventListener("change",e=>{state.historyEquipmentFilter=e.target.value;renderHistory()});
+  $("#historyFromDate")?.addEventListener("change",e=>{state.historyFromDate=e.target.value;renderHistory()});
+  $("#historyToDate")?.addEventListener("change",e=>{state.historyToDate=e.target.value;renderHistory()});
+}
+
+function renderEquipment(){
+  const allRecs=state.files.equipment.records;
+  const recs=allRecs.filter(r=>containsSearch([r.name,r.category,r.manufacturer,r.model,r.location,r.status],state.equipmentSearch));
+  const selected=equipmentById(state.selectedEquipmentId)||null;
+  const editing=state.equipmentEditorOpen;
+
+  const editorHtml=editing?`
+   <div class="card span-12 editor-card" id="equipmentEditor">
+    <div class="editor-head">
+      <div>
+        <h2>${selected?`Edit equipment — ${esc(selected.name)}`:"Add new equipment"}</h2>
+        <div class="small muted">${selected?"You are editing an existing equipment record.":"This will create a new equipment record."}</div>
+      </div>
+      <button type="button" id="cancelEqBtn">Cancel</button>
+    </div>
+    <form id="eqForm">
+      <input type="hidden" name="id" value="${esc(selected?.id||"")}">
+      <div class="row">
+       <div class="field"><label>Name</label><input name="name" required value="${esc(selected?.name||"")}" placeholder="Main Engine"></div>
+       <div class="field"><label>Type</label><input name="category" value="${esc(selected?.category||"")}" placeholder="engine, generator, pump..."></div>
+       <div class="field"><label>Location</label><input name="location" value="${esc(selected?.location||"")}"></div>
+       <div class="field"><label>Manufacturer</label><input name="manufacturer" value="${esc(selected?.manufacturer||"")}"></div>
+       <div class="field third"><label>Model</label><input name="model" value="${esc(selected?.model||"")}"></div>
+       <div class="field third"><label>Serial number</label><input name="serial_number" value="${esc(selected?.serial_number||"")}"></div>
+       <div class="field third"><label>Status</label><select name="status">${["active","inactive","removed","spare"].map(x=>`<option ${selected?.status===x?"selected":""}>${x}</option>`).join("")}</select></div>
+       <div class="field full"><label>Notes</label><textarea name="notes">${esc(selected?.notes||"")}</textarea></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">${selected?"Save changes":"Add equipment"}</button></div>
+    </form>
+   </div>`:"";
+
+  $("#equipment").innerHTML=`
+  <div class="grid">
+   ${editorHtml}
+   <div class="card span-12">
+    <div class="list-head">
+      <div>
+        <h2>Equipment</h2>
+        <div class="small muted">Click an existing item to edit it.</div>
+      </div>
+      <button id="newEqBtn">Add new equipment</button>
+    </div>
+    <div class="toolbar">
+      <div class="grow"><label>Search equipment</label><input id="equipmentSearch" type="search" placeholder="Name, type, make, model, location…" value="${esc(state.equipmentSearch)}"></div>
+      <div class="result-count">${recs.length} of ${allRecs.length} items</div>
+    </div>
+    <div class="table-scroll">
+    <table><thead><tr><th>Name</th><th>Type</th><th>Make / model</th><th>Location</th><th>Status</th></tr></thead><tbody>
+    ${recs.map(r=>`<tr class="clickable" data-eqid="${esc(r.id)}"><td><strong>${esc(r.name)}</strong></td><td>${esc(r.category||"")}</td><td>${esc([r.manufacturer,r.model].filter(Boolean).join(" "))}</td><td>${esc(r.location||"")}</td><td>${esc(r.status)}</td></tr>`).join("")}
+    </tbody></table>
+    </div>
+   </div>
+  </div>`;
+  $$("[data-eqid]").forEach(tr=>tr.onclick=()=>{
+    state.selectedEquipmentId=tr.dataset.eqid;state.equipmentEditorOpen=true;renderEquipment();
+    setTimeout(()=>$("#equipmentEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  });
+  $("#newEqBtn").onclick=()=>{state.selectedEquipmentId=null;state.equipmentEditorOpen=true;renderEquipment();setTimeout(()=>$("#equipmentEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0)};
+  $("#cancelEqBtn")?.addEventListener("click",()=>{state.selectedEquipmentId=null;state.equipmentEditorOpen=false;renderEquipment()});
+  $("#equipmentSearch")?.addEventListener("input",e=>{state.equipmentSearch=e.target.value;renderEquipment();const i=$("#equipmentSearch");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}});
+  $("#eqForm")?.addEventListener("submit",e=>{
+    e.preventDefault();const fd=new FormData(e.target);let rec=equipmentById(fd.get("id"));
+    if(!rec){
+      rec={id:uid("eq"),name:"",category:"other",manufacturer:null,model:null,serial_number:null,status:"active",parent_equipment_id:null,location:null,attributes:{},tags:[],attachment_ids:[],notes:""};
+      state.files.equipment.records.push(rec);
+    }
+    ["name","category","location","manufacturer","model","serial_number","status","notes"].forEach(k=>rec[k]=fd.get(k)||null);
+    rec.name=fd.get("name");rec.category=fd.get("category")||"other";rec.status=fd.get("status")||"active";
+    state.selectedEquipmentId=null;state.equipmentEditorOpen=false;markChanged();renderAll();
+  });
+}
+
+function renderMaintenance(){
+  let rows=state.files.maintenance_tasks.records.map(t=>({t,s:taskStatus(t)}));
+  taskSortRows(rows);
+  const allCount=rows.length;
+  rows=rows.filter(({t,s})=>taskMatchesSearch(t,state.maintenanceSearch) && statusFilterMatch(s,state.maintenanceStatusFilter));
+  const recs=rows.map(x=>x.t);
+
+  const selected=taskById(state.selectedTaskId)||null;
+  const eqOptions=state.files.equipment.records.filter(x=>x.status!=="removed");
+  const recurring=selected?.task_kind!=="one_time";
+  const triggers=selected?.schedule?.triggers||[];
+  const hourTrig=triggers.find(x=>x.type==="meter" && x.unit==="hours");
+  const monthTrig=triggers.find(x=>x.type==="calendar" && x.unit==="months");
+  const dateTrig=triggers.find(x=>x.type==="date");
+  const editing=state.taskEditorOpen;
+
+  const editorHtml=editing?`
+    <div class="card span-12 editor-card" id="taskEditor">
+     <div class="editor-head">
+       <div>
+         <h2>${selected?`Edit schedule — ${esc(selected.title)}`:"Add maintenance item"}</h2>
+         <div class="small muted">${selected?"You are changing when this maintenance item is tracked as due.":"Create a maintenance item for the dashboard to track."}</div>
+       </div>
+       <button type="button" id="cancelTaskBtn">Cancel</button>
+     </div>
+     <form id="taskForm">
+      <input type="hidden" name="id" value="${esc(selected?.id||"")}">
+      <div class="row">
+       <div class="field"><label>Equipment</label><select name="equipment_id" required><option value="">Choose equipment…</option>${eqOptions.map(x=>`<option value="${esc(x.id)}" ${selected?.equipment_id===x.id?"selected":""}>${esc(x.name)}</option>`).join("")}</select></div>
+       <div class="field"><label>What needs to be done?</label><input name="title" required value="${esc(selected?.title||"")}" placeholder="Change oil and filter"></div>
+       <div class="field"><label>Kind</label><select name="task_kind" id="taskKind"><option value="recurring" ${recurring?"selected":""}>Recurring</option><option value="one_time" ${!recurring?"selected":""}>One-time job</option></select></div>
+       <div class="field"><label>Category</label><input name="category" value="${esc(selected?.category||"")}" placeholder="inspection, lubrication..."></div>
+      </div>
+      <div id="recurringFields" class="${recurring?"":"hidden"}">
+       <h3>Repeat when either limit is reached</h3><div class="small muted" style="margin:-5px 0 10px">Operating hours come from the equipment meter; calendar limits are based on dates.</div>
+       <div class="row">
+        <div class="field"><label>Every ___ operating hours</label><input type="number" min="0" step="1" name="hours_interval" value="${esc(hourTrig?.interval||"")}"></div>
+        <div class="field"><label>Warn this many operating hours early</label><input type="number" min="0" step="1" name="hours_warning" value="${esc(hourTrig?.warning?.value||"")}"></div>
+       </div>
+       <div class="row">
+        <div class="field"><label>Every ___ calendar months</label><input type="number" min="0" step="1" name="months_interval" value="${esc(monthTrig?.interval||"")}"></div>
+        <div class="field"><label>Warn this many calendar days early</label><input type="number" min="0" step="1" name="days_warning" value="${esc(monthTrig?.warning?.value||"")}"></div>
+       </div>
+       <p class="small muted">An operating-hours interval requires an hour meter for the selected equipment. You can add one under Hours & Meters.</p>
+      </div>
+      <div id="oneTimeFields" class="${recurring?"hidden":""}">
+       <div class="row"><div class="field"><label>Due date</label><input type="date" name="due_date" value="${esc(dateTrig?.due_date||"")}"></div></div>
+      </div>
+      <div class="row"><div class="field full"><label>Procedure / notes</label><textarea name="procedure">${esc(selected?.procedure||"")}</textarea></div></div>
+      <div class="actions">
+        <button class="primary" type="submit">${selected?"Save changes":"Add maintenance item"}</button>
+        <label style="display:flex;gap:6px;align-items:center;margin:0 0 0 auto"><input style="width:auto" type="checkbox" name="active" ${selected?.active===false?"":"checked"}> Active</label>
+      </div>
+     </form>
+    </div>`:"";
+
+  $("#maintenance").innerHTML=`
+   <div class="grid">
+    ${editorHtml}
+    <div class="card span-12">
+     <div class="list-head">
+       <div>
+         <h2>Maintenance schedule</h2>
+         <div class="small muted">Expand Details to reference the procedure and specifications; Edit changes the schedule.</div>
+       </div>
+       <button id="newTaskBtn">Add maintenance item</button>
+     </div>
+     <div class="toolbar">
+       <div class="grow"><label>Search</label><input id="maintenanceSearch" type="search" placeholder="Maintenance or equipment…" value="${esc(state.maintenanceSearch)}"></div>
+       <div class="short"><label>Status</label><select id="maintenanceStatusFilter">
+         <option value="all" ${state.maintenanceStatusFilter==="all"?"selected":""}>All statuses</option>
+         <option value="overdue" ${state.maintenanceStatusFilter==="overdue"?"selected":""}>Overdue</option>
+         <option value="soon" ${state.maintenanceStatusFilter==="soon"?"selected":""}>Due soon</option>
+         <option value="notdue" ${state.maintenanceStatusFilter==="notdue"?"selected":""}>Not due</option>
+         <option value="needsinfo" ${state.maintenanceStatusFilter==="needsinfo"?"selected":""}>Needs info</option>
+       </select></div>
+       <div class="result-count">${recs.length} of ${allCount} items</div>
+     </div>
+     <div class="table-scroll">
+     <table><thead><tr><th>Maintenance item</th><th>Equipment</th><th>Schedule</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+     ${rows.map(({t,s})=>{
+       const expanded=taskExpanded("schedule",t.id);
+       return `<tr>
+         <td><strong>${esc(t.title)}</strong></td>
+         <td>${esc(equipmentById(t.equipment_id)?.name||"")}</td>
+         <td>${esc(schedulePlain(t))}</td>
+         <td><span class="badge ${s.status}">${esc(s.label)}</span></td>
+         <td><div class="task-actions">
+           <button type="button" data-schedule-details="${esc(t.id)}" aria-expanded="${expanded}">${expanded?"Hide details":"Details"}</button>
+           <button type="button" data-edit-task="${esc(t.id)}">Edit</button>
+         </div></td>
+       </tr>
+       ${expanded?`<tr class="detail-row"><td colspan="5">${taskDetailHtml(t,s,"schedule")}</td></tr>`:""}`;
+     }).join("")}
+     </tbody></table>
+     </div>
+    </div>
+   </div>`;
+  $$("[data-schedule-details]").forEach(btn=>btn.addEventListener("click",()=>{
+    const id=btn.dataset.scheduleDetails;
+    const pane=$("#maintenance")?.querySelector(".table-scroll");
+    const scrollTop=pane?.scrollTop||0;
+    toggleTaskExpanded("schedule",id);
+    renderMaintenance();
+    requestAnimationFrame(()=>restoreListScroll("#maintenance",scrollTop,`[data-schedule-details="${selectorEscape(id)}"]`));
+  }));
+  $$("[data-edit-task]").forEach(btn=>btn.addEventListener("click",()=>{
+    state.selectedTaskId=btn.dataset.editTask;state.taskEditorOpen=true;renderMaintenance();
+    setTimeout(()=>$("#taskEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  }));
+  $$("[data-detail-edit]").forEach(btn=>btn.addEventListener("click",()=>{
+    state.selectedTaskId=btn.dataset.detailEdit;state.taskEditorOpen=true;renderMaintenance();
+    setTimeout(()=>$("#taskEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  }));
+  $("#newTaskBtn").onclick=()=>{state.selectedTaskId=null;state.taskEditorOpen=true;renderMaintenance();setTimeout(()=>$("#taskEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0)};
+  $("#cancelTaskBtn")?.addEventListener("click",()=>{state.selectedTaskId=null;state.taskEditorOpen=false;renderMaintenance()});
+  $("#maintenanceSearch")?.addEventListener("input",e=>{state.maintenanceSearch=e.target.value;renderMaintenance();const i=$("#maintenanceSearch");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}});
+  $("#maintenanceStatusFilter")?.addEventListener("change",e=>{state.maintenanceStatusFilter=e.target.value;renderMaintenance()});
+  $("#taskKind")?.addEventListener("change",e=>{$("#recurringFields").classList.toggle("hidden",e.target.value!=="recurring");$("#oneTimeFields").classList.toggle("hidden",e.target.value==="recurring")});
+  $("#taskForm")?.addEventListener("submit",e=>{
+    e.preventDefault();const fd=new FormData(e.target);let rec=taskById(fd.get("id"));
+    const eqid=fd.get("equipment_id"), kind=fd.get("task_kind");
+    if(!rec){
+      rec={id:uid("task"),equipment_id:eqid,title:"",category:null,active:true,task_kind:kind,schedule:{logic:"any",triggers:[]},baseline:{date:todayISO(),meter_values:[]},procedure:"",source:{type:"owner_program",reference:""},tags:[],notes:""};
+      state.files.maintenance_tasks.records.push(rec);
+    }
+    rec.equipment_id=eqid;rec.title=fd.get("title");rec.category=fd.get("category")||null;rec.active=fd.get("active")==="on";rec.task_kind=kind;rec.procedure=fd.get("procedure")||"";
+    const trs=[];
+    if(kind==="recurring"){
+      const h=Math.round(Number(fd.get("hours_interval")||0)), mo=Number(fd.get("months_interval")||0);
+      if(h>0){
+        const meter=state.files.meters.records.find(x=>x.equipment_id===eqid && x.kind==="hour_meter");
+        if(!meter){alert("Please add an hour meter for this equipment first, or leave the hours interval blank.");return}
+        const w=Math.round(Number(fd.get("hours_warning")||0));
+        trs.push({type:"meter",meter_id:meter.id,interval:h,unit:"hours",...(w?{warning:{value:w,unit:"hours"}}:{})});
+        if(!rec.baseline.meter_values?.some(x=>x.meter_id===meter.id)){
+          const lr=latestReading(meter.id);
+          if(lr) rec.baseline.meter_values=[...(rec.baseline.meter_values||[]),{meter_id:meter.id,value:Math.round(lr.value),unit:"hours"}];
+        }
+      }
+      if(mo>0){
+        const w=Number(fd.get("days_warning")||0);
+        trs.push({type:"calendar",interval:mo,unit:"months",...(w?{warning:{value:w,unit:"days"}}:{})});
+      }
+      if(!trs.length){alert("Enter at least one repeat interval.");return}
+    }else{
+      const d=fd.get("due_date"); if(!d){alert("Choose a due date for the one-time job.");return}
+      trs.push({type:"date",due_date:d,warning:{value:14,unit:"days"}});
+    }
+    rec.schedule={logic:"any",triggers:trs};
+    state.selectedTaskId=null;state.taskEditorOpen=false;markChanged();renderAll();
+  });
+}
+
+function renderLog(){
+  const activeEq=state.files.equipment.records.filter(x=>x.status==="active");
+  const preTask=state.logPrefillTaskId?taskById(state.logPrefillTaskId):null;
+  const preEqId=preTask?.equipment_id||"";
+  $("#log").innerHTML=`
+   <div class="grid"><div class="card span-8">
+    <h2>Log completed work</h2>
+    ${preTask?`<div class="notice" style="margin-bottom:14px"><strong>Logging:</strong> ${esc(preTask.title)} <span class="muted">— ${esc(equipmentById(preTask.equipment_id)?.name||"")}</span></div>`:""}
+    <form id="logForm">
+     <div class="row">
+      <div class="field third"><label>Date</label><input type="date" name="date" value="${todayISO()}" required></div>
+      <div class="field"><label>Equipment</label><select name="equipment_id" id="logEq" required><option value="">Choose equipment…</option>${activeEq.map(x=>`<option value="${esc(x.id)}" ${x.id===preEqId?"selected":""}>${esc(x.name)}</option>`).join("")}</select></div>
+      <div class="field full"><label>Summary</label><input name="summary" required value="${esc(preTask?.title||"")}" placeholder="Changed engine oil and filter"></div>
+      <div class="field full"><label>Scheduled items completed</label><div id="logTasks" class="muted small">${preEqId?"":"Choose equipment first."}</div></div>
+      <div class="field" id="logMeterWrap"><label>Meter / engine hours (optional)</label><input type="number" min="0" step="0.1" name="meter_value" placeholder=""><div class="small muted" style="margin-top:4px">If left blank, the app uses the latest reading on or before the work date when available.</div></div>
+      <div class="field full"><label>Notes</label><textarea name="notes"></textarea></div>
+     </div>
+     <button class="primary" type="submit">Save maintenance log</button>
+    </form>
+   </div>
+   <div class="card span-4"><h2>Recent work</h2><div class="table-scroll compact" style="padding:0 8px">${state.files.service_history.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20).map(s=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><strong>${esc(s.summary)}</strong><div class="small muted">${fmtDate(s.date)} • ${(s.equipment_ids||[]).map(id=>equipmentById(id)?.name).filter(Boolean).map(esc).join(", ")}</div></div>`).join("")||'<div class="empty">No history yet.</div>'}</div></div>
+   </div>`;
+  function updateLogTasks(){
+    const eqid=$("#logEq").value;
+    const tasks=state.files.maintenance_tasks.records.filter(t=>t.active && t.equipment_id===eqid && !(t.task_kind==="one_time" && latestCompletion(t.id)));
+    $("#logTasks").innerHTML=tasks.length?tasks.map(t=>`<label class="task-check"><input type="checkbox" name="completed_task" value="${esc(t.id)}" ${state.logPrefillTaskId===t.id?"checked":""}><span><strong>${esc(t.title)}</strong><br><span class="muted">${esc(schedulePlain(t))}</span></span></label>`).join(""):'<span class="muted">No open scheduled items for this equipment.</span>';
+    const m=state.files.meters.records.find(x=>x.equipment_id===eqid && x.kind==="hour_meter");
+    const lr=m?latestReading(m.id):null;
+    const inp=$("[name=meter_value]");inp.disabled=!m;inp.placeholder=m?(lr?`Current: ${lr.value}`:"Enter hours"):"No hour meter configured";
+  }
+  $("#logEq").onchange=()=>{
+    state.logPrefillTaskId=null;
+    updateLogTasks();
+  };
+  if(preEqId) updateLogTasks();
+  $("#logForm").onsubmit=e=>{
+    e.preventDefault();const fd=new FormData(e.target),eqid=fd.get("equipment_id"),date=fd.get("date");
+    const meter=state.files.meters.records.find(x=>x.equipment_id===eqid && x.kind==="hour_meter");
+    const meterVal=fd.get("meter_value")!==""?Number(fd.get("meter_value")):null;
+    const sv={
+      record_type:"service_event",schema_version:state.files.manifest.schema_version,id:uid("svc"),date,
+      recorded_at:new Date().toISOString(),summary:fd.get("summary"),equipment_ids:[eqid],
+      completed_task_ids:fd.getAll("completed_task"),meter_values:meter&&meterVal!==null?[{meter_id:meter.id,value:meterVal,unit:meter.unit,quality:"exact"}]:[],
+      parts_used:[],performed_by_ids:[],
+      notes:fd.get("notes")||"",attachment_ids:[],tags:[]
+    };
+    state.files.service_history.push(sv);
+    if(meter&&meterVal!==null) state.files.meter_readings.push({record_type:"meter_reading",schema_version:state.files.manifest.schema_version,id:uid("read"),meter_id:meter.id,observed_at:date,value:meterVal,displayed_value:meterVal,unit:meter.unit,source:"service_event",service_event_id:sv.id,quality:"exact",event:"observation",notes:""});
+    state.logPrefillTaskId=null;
+    markChanged();renderAll();alert("Maintenance logged.");
+  };
+}
+
+function renderMeters(){
+  const allMeters=state.files.meters.records;
+  const meters=allMeters.filter(m=>{
+    const eq=equipmentById(m.equipment_id);
+    return containsSearch([m.name,m.kind,m.unit,eq?.name],state.meterSearch);
+  });
+  const selected=state.selectedMeterId?meterById(state.selectedMeterId):null;
+  const mode=state.meterEditorMode;
+  const editorOpen=state.meterEditorOpen;
+
+  $("#meters").innerHTML=`
+   <div class="grid">
+    <div class="card span-12">
+      <div class="list-head">
+        <div>
+          <h2>Hours & meters</h2>
+          <div class="small muted">Configure counters here. Click a row to update its current reading.</div>
+        </div>
+        <button id="newMeterBtn">Add meter</button>
+      </div>
+      <table><thead><tr><th>Meter</th><th>Equipment</th><th>Current</th><th>Updated</th><th></th></tr></thead><tbody>
+      ${meters.map(m=>{
+        const r=latestReading(m.id);
+        return `<tr class="clickable" data-meterid="${esc(m.id)}">
+          <td><strong>${esc(m.name)}</strong><div class="small muted">${esc(m.kind==="hour_meter"?"Hour meter":m.kind||"Meter")}</div></td>
+          <td>${esc(equipmentById(m.equipment_id)?.name||"")}</td>
+          <td>${r?num(r.value)+" "+esc(r.unit):"—"}</td>
+          <td>${r?`<span class="meter-age ${readingFreshness(r).level==="stale"?"stale":readingFreshness(r).level==="aging"?"aging":""}">${fmtObservedAt(r.observed_at)}${readingFreshness(r).level==="stale"?"<br>Meter stale":readingFreshness(r).level==="aging"?"<br>Aging":""}</span>`:"—"}</td>
+          <td><button type="button" class="log-btn" data-update-meter="${esc(m.id)}">Update</button></td>
+        </tr>`;
+      }).join("")}
+      </tbody></table>
+    </div>
+
+    ${editorOpen && mode==="update" && selected?`
+    <div class="card span-12 editor-card" id="meterEditor">
+      <div class="editor-head">
+        <div>
+          <h2>Update meter — ${esc(selected.name)}</h2>
+          <div class="small muted">${esc(equipmentById(selected.equipment_id)?.name||"")} • current ${latestReading(selected.id)?num(latestReading(selected.id).value)+" "+esc(selected.unit):"reading not set"}</div>
+        </div>
+        <button type="button" id="cancelMeterBtn">Cancel</button>
+      </div>
+      <form id="meterReadingForm">
+        <input type="hidden" name="meter_id" value="${esc(selected.id)}">
+        <div class="row">
+          <div class="field third"><label>New reading</label><input type="number" step="1" min="0" name="value" required></div>
+          <div class="field third"><label>Date</label><input type="date" name="date" value="${todayISO()}" required></div>
+          <div class="field third"><label>Notes (optional)</label><input name="notes" placeholder="e.g. gauge replaced"></div>
+        </div>
+        <div class="actions"><button class="primary" type="submit">Save reading</button></div>
+      </form>
+    </div>`:""}
+
+    ${editorOpen && mode==="add"?`
+    <div class="card span-12 editor-card" id="meterEditor">
+      <div class="editor-head">
+        <div>
+          <h2>Add meter</h2>
+          <div class="small muted">Create a counter used for maintenance tracking, such as engine or generator hours.</div>
+        </div>
+        <button type="button" id="cancelMeterBtn">Cancel</button>
+      </div>
+      <form id="newMeterForm">
+        <div class="row">
+          <div class="field"><label>Equipment</label><select name="equipment_id" required><option value="">Choose equipment…</option>${state.files.equipment.records.filter(x=>x.status==="active").map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("")}</select></div>
+          <div class="field"><label>Name</label><input name="name" required placeholder="Main engine hours"></div>
+          <div class="field third"><label>Type</label><select name="kind"><option value="hour_meter">Hour meter</option><option value="cycle_counter">Cycle counter</option><option value="distance">Distance</option><option value="custom">Other</option></select></div>
+          <div class="field third"><label>Unit</label><input name="unit" value="hours" required></div>
+          <div class="field third"><label>Starting reading (optional)</label><input type="number" min="0" step="1" name="starting_value"></div>
+        </div>
+        <div class="actions"><button class="primary" type="submit">Add meter</button></div>
+      </form>
+    </div>`:""}
+   </div>`;
+
+  $$("[data-meterid]").forEach(tr=>tr.onclick=()=>{
+    state.selectedMeterId=tr.dataset.meterid;
+    state.meterEditorMode="update";
+    state.meterEditorOpen=true;
+    renderMeters();
+    setTimeout(()=>$("#meterEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  });
+  $$("[data-update-meter]").forEach(btn=>btn.onclick=e=>{
+    e.stopPropagation();
+    state.selectedMeterId=btn.dataset.updateMeter;
+    state.meterEditorMode="update";
+    state.meterEditorOpen=true;
+    renderMeters();
+    setTimeout(()=>$("#meterEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  });
+  $("#newMeterBtn").onclick=()=>{
+    state.selectedMeterId=null;
+    state.meterEditorMode="add";
+    state.meterEditorOpen=true;
+    renderMeters();
+    setTimeout(()=>$("#meterEditor")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
+  };
+  $("#cancelMeterBtn")?.addEventListener("click",()=>{
+    state.selectedMeterId=null;
+    state.meterEditorMode=null;
+    state.meterEditorOpen=false;
+    renderMeters();
+  });
+
+  $("#meterReadingForm")?.addEventListener("submit",e=>{
+    e.preventDefault();
+    const fd=new FormData(e.target),m=meterById(fd.get("meter_id")),v=Number(fd.get("value")),date=fd.get("date");
+    const last=latestReading(m.id);
+    if(m.monotonic && last && v<last.value && !confirm(`This is lower than the previous reading (${last.value}). Save anyway?`)) return;
+
+    state.files.meter_readings.push({
+      record_type:"meter_reading",
+      schema_version:state.files.manifest.schema_version,
+      id:uid("read"),
+      meter_id:m.id,
+      observed_at:date,
+      value:v,
+      displayed_value:v,
+      unit:m.unit,
+      source:"manual",
+      service_event_id:null,
+      quality:"exact",
+      event:"observation",
+      notes:fd.get("notes")||""
+    });
+    state.selectedMeterId=null;state.meterEditorMode=null;state.meterEditorOpen=false;
+    markChanged();renderAll();
+  });
+
+  $("#newMeterForm")?.addEventListener("submit",e=>{
+    e.preventDefault();
+    const fd=new FormData(e.target);
+    const kind=fd.get("kind")||"hour_meter";
+    const unit=fd.get("unit")||"hours";
+    const rec={
+      id:uid("mtr"),
+      equipment_id:fd.get("equipment_id"),
+      name:fd.get("name"),
+      kind,
+      unit,
+      precision:0.1,
+      monotonic:true,
+      notes:""
+    };
+    state.files.meters.records.push(rec);
+
+    if(fd.get("starting_value")!==""){
+      const v=Number(fd.get("starting_value"));
+      state.files.meter_readings.push({
+        record_type:"meter_reading",
+        schema_version:state.files.manifest.schema_version,
+        id:uid("read"),
+        meter_id:rec.id,
+        observed_at:todayISO(),
+        value:v,
+        displayed_value:v,
+        unit:rec.unit,
+        source:"manual",
+        service_event_id:null,
+        quality:"exact",
+        event:"observation",
+        notes:"Initial reading"
+      });
+    }
+
+    state.selectedMeterId=rec.id;
+    state.meterEditorMode="update";
+    state.meterEditorOpen=false;
+    markChanged();renderAll();
+  });
+}
+
+/* ---------- ZIP writer (store/no compression) ---------- */
+const crcTable=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=crcTable[(c^b)&255]^(c>>>8);return (c^0xffffffff)>>>0}
+function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}
+function makeZip(fileMap){
+  const chunks=[],central=[];let offset=0;
+  for(const [name,data0] of fileMap){
+    const nameB=enc.encode(name),data=data0 instanceof Uint8Array?data0:enc.encode(String(data0)),crc=crc32(data);
+    const local=new Uint8Array([0x50,0x4b,0x03,0x04,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0)]);
+    chunks.push(local,nameB,data);
+    const cen=new Uint8Array([0x50,0x4b,0x01,0x02,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset)]);
+    central.push(cen,nameB);offset+=local.length+nameB.length+data.length;
+  }
+  const centralSize=central.reduce((a,b)=>a+b.length,0),count=fileMap.size;
+  const end=new Uint8Array([0x50,0x4b,0x05,0x06,...u16(0),...u16(0),...u16(count),...u16(count),...u32(centralSize),...u32(offset),...u16(0)]);
+  return new Blob([...chunks,...central,end],{type:"application/zip"});
+}
+async function exportZip(){
+  let files=new Map();
+  for(const [k,v] of state.importedFiles) files.set(k,v);
+  for(const [path,text] of serializeCoreFiles()) files.set(path,enc.encode(text));
+  const blob=makeZip(files);
+  const vessel=(state.files.vessel.record.name||"boat").replace(/[^a-z0-9_-]+/gi,"-").replace(/^-|-$/g,"");
+  const suggestedName=state.zipFileName || `${vessel}-maintenance-data.zip`;
+
+  // Best case: write back to the exact ZIP the user opened.
+  if(state.zipFileHandle && typeof state.zipFileHandle.createWritable==="function"){
+    try{
+      let perm="granted";
+      if(state.zipFileHandle.queryPermission) perm=await state.zipFileHandle.queryPermission({mode:"readwrite"});
+      if(perm!=="granted" && state.zipFileHandle.requestPermission)
+        perm=await state.zipFileHandle.requestPermission({mode:"readwrite"});
+      if(perm==="granted"){
+        const writable=await state.zipFileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        state.importedFiles=files;
+        state.dirty=false;
+        state.lastSaveMode="same-file";
+        updateHeader();
+        await cacheWorkingCopy();
+        return;
+      }
+    }catch(e){
+      console.warn("Could not overwrite original ZIP; trying Save As.",e);
+    }
+  }
+
+  // Chromium-style Save As: choose a location once, then retain that writable handle.
+  if(typeof window.showSaveFilePicker==="function"){
+    try{
+      const handle=await window.showSaveFilePicker({
+        suggestedName,
+        types:[{
+          description:"Boat Maintenance Data ZIP",
+          accept:{"application/zip":[".zip"]}
+        }]
+      });
+      const writable=await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      state.zipFileHandle=handle;
+      state.zipFileName=handle.name||suggestedName;
+      state.importedFiles=files;
+      state.dirty=false;
+      state.lastSaveMode="same-file";
+      updateHeader();
+      await cacheWorkingCopy();
+      return;
+    }catch(e){
+      if(e.name==="AbortError")return;
+      console.warn("Save As failed; falling back to download.",e);
+    }
+  }
+
+  // Safari/Firefox fallback: browsers do not permit arbitrary overwrite of the selected source file.
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=suggestedName;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  state.importedFiles=files;
+  state.dirty=false;
+  state.lastSaveMode="download";
+  updateHeader();
+  await cacheWorkingCopy();
+  alert(
+    "Your browser saved an updated ZIP as a download because it cannot write back to the ZIP you opened.\\n\\n"+
+    "This app will keep the newer working copy in the browser and will warn you if you later try to open an older ZIP of this same boat."
+  );
+}
+
+/* ---------- events ---------- */
+$("#openZipBtn").onclick=openDataZip;
+$("#openZipBtn2").onclick=openDataZip;
+$("#importZipInput").onchange=e=>importZip(e.target.files[0],null);
+$("#importZipInput2").onchange=e=>importZip(e.target.files[0],null);
+$("#exportBtn").onclick=()=>exportZip().catch(e=>alert("Save failed: "+e.message));
+$$("nav button").forEach(b=>b.onclick=()=>{
+  if(!state.files.vessel)return;
+  if(b.dataset.view==="log"){state.logPrefillTaskId=null;renderLog();}
+  showView(b.dataset.view);
+});
+
+restoreCachedDataset().catch(e=>console.warn("Restore failed",e));
+window.addEventListener("beforeunload",e=>{
+  if(state.dirty){
+    e.preventDefault();
+    e.returnValue="";
+  }
+});
+</script>
+</body>
+</html>

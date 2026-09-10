@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:boat-maintenance:v1.2:service_event",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "id",
+    "date",
+    "summary",
+    "equipment_ids",
+    "completed_task_ids"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "service_event"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "recorded_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "equipment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completed_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "meter_values": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "meter_id",
+          "value",
+          "unit"
+        ],
+        "properties": {
+          "meter_id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "exact",
+              "estimated"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "parts_used": {
+      "type": "array"
+    },
+    "performed_by_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "attachment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

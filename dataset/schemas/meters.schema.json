@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:boat-maintenance:v1.2:meters",
+  "type": "object",
+  "required": [
+    "file_type",
+    "schema_version",
+    "records"
+  ],
+  "properties": {
+    "file_type": {
+      "const": "meters"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "equipment_id",
+          "name",
+          "kind",
+          "unit"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "equipment_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "hour_meter",
+              "cycle_counter",
+              "distance",
+              "custom"
+            ]
+          },
+          "unit": {
+            "type": "string"
+          },
+          "precision": {
+            "type": [
+              "number",
+              "integer"
+            ]
+          },
+          "monotonic": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

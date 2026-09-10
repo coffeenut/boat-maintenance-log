@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:boat-maintenance:v1.2:meter_reading",
+  "type": "object",
+  "required": [
+    "record_type",
+    "schema_version",
+    "id",
+    "meter_id",
+    "observed_at",
+    "value",
+    "unit",
+    "source"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "meter_reading"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "meter_id": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string"
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "manual",
+        "nmea2000",
+        "api",
+        "import",
+        "service_event",
+        "other"
+      ]
+    },
+    "service_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "displayed_value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "quality": {
+      "enum": [
+        "exact",
+        "estimated",
+        "corrected"
+      ]
+    },
+    "event": {
+      "enum": [
+        "observation",
+        "meter_reset",
+        "meter_replacement",
+        "correction"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,19 @@
+{
+  "file_type": "vessel",
+  "schema_version": "1.2.0",
+  "record": {
+    "id": "ves_80694c93-661f-4a2e-b2a6-d7061674a592",
+    "name": "Trickster",
+    "vessel_type": "Trawler",
+    "builder": "Pacific Asian Enterprises / Nordhavn",
+    "model": "Nordhavn 40",
+    "year": 2002,
+    "identifiers": [
+      {
+        "type": "hull_number",
+        "value": "4036"
+      }
+    ],
+    "notes": "Maintenance dataset built only from equipment identity already confirmed for Trickster and maintenance information verified against manufacturer manuals or manufacturer documentation. No service dates, meter readings, inventory quantities, or unverified component models were invented."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "format": "boat-maintenance-data",
+  "schema_version": "1.2.0",
+  "dataset_id": "ds_df48052f-121a-4e7e-af0c-cfc301175a6e",
+  "created_at": "2026-08-29T17:57:00-07:00",
+  "modified_at": "2026-08-30T01:34:11Z",
+  "vessel_id": "ves_80694c93-661f-4a2e-b2a6-d7061674a592",
+  "files": {
+    "vessel": "data/vessel.json",
+    "equipment": "data/equipment.json",
+    "meters": "data/meters.json",
+    "maintenance_tasks": "data/maintenance_tasks.json",
+    "parts": "data/parts.json",
+    "parties": "data/parties.json",
+    "attachments": "data/attachments.json",
+    "service_history": "data/service_history.jsonl",
+    "meter_readings": "data/meter_readings.jsonl"
+  },
+  "conventions": {
+    "dates": "ISO-8601",
+    "timestamps": "ISO-8601 with timezone",
+    "attachment_paths": "relative to dataset root",
+    "canonical_text_encoding": "UTF-8"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "file_type": "meters",
+  "schema_version": "1.2.0",
+  "records": [
+    {
+      "id": "mtr_6c62fe29-ae64-45ac-80d4-c30cf4d52110",
+      "equipment_id": "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6",
+      "name": "Main engine hours",
+      "kind": "hour_meter",
+      "unit": "hours",
+      "monotonic": true,
+      "notes": "Enter the current whole-hour reading from the installed engine hour meter."
+    },
+    {
+      "id": "mtr_05ea0da6-1942-4d29-a31b-11d34da38706",
+      "equipment_id": "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34",
+      "name": "Generator hours",
+      "kind": "hour_meter",
+      "unit": "hours",
+      "monotonic": true,
+      "notes": "Enter the current whole-hour reading from the generator hour meter."
+    },
+    {
+      "id": "mtr_38d6a8f6-b89f-41be-a66f-b45600349b88",
+      "equipment_id": "eq_6b8568da-58ab-4ad6-a7a1-e786edf1e22d",
+      "name": "Wing engine hours",
+      "kind": "hour_meter",
+      "unit": "hours",
+      "monotonic": true,
+      "notes": "Enter the current whole-hour reading from the installed wing-engine hour meter."
+    }
+  ]
+}

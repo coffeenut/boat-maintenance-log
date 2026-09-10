@@ -1,0 +1,74 @@
+{
+  "file_type": "parts",
+  "schema_version": "1.2.0",
+  "records": [
+    {
+      "id": "part_e61ba1d3-c4b3-4eae-84d7-fac5245074e0",
+      "name": "Lugger secondary fuel-filter cartridge",
+      "manufacturer": "Lugger / Northern Lights",
+      "part_number": "24-51005",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_ea6f55e2-1357-40b8-8fc2-16574fdfdfb6"
+      ],
+      "notes": "Part number stated in LP668 operator manual. Inventory quantity intentionally omitted."
+    },
+    {
+      "id": "part_ce05b90c-959c-4798-8971-f634496109f7",
+      "name": "M753K oil filter",
+      "manufacturer": "Northern Lights",
+      "part_number": "140516190",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34"
+      ],
+      "notes": "Part number stated in M753K operator manual. Inventory quantity intentionally omitted."
+    },
+    {
+      "id": "part_c05fec55-4c3e-4b58-993d-a1989bdf2461",
+      "name": "M753K secondary fuel filter",
+      "manufacturer": "Northern Lights",
+      "part_number": "130336020",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34"
+      ],
+      "notes": "Part number stated in M753K operator manual. Inventory quantity intentionally omitted."
+    },
+    {
+      "id": "part_d3bfb6ca-f4b9-4a6b-947c-93a3bbe3dbf9",
+      "name": "M753K marine air-cleaner element",
+      "manufacturer": "Northern Lights",
+      "part_number": "24-22003",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_49f0aadc-e4a9-4fd9-87e4-c27d4fb1cf34"
+      ],
+      "notes": "Part number stated in M753K operator manual. Inventory quantity intentionally omitted."
+    },
+    {
+      "id": "part_cbabc646-4213-4977-bfee-31d104f72749",
+      "name": "SP155 sacrificial anode — zinc",
+      "manufacturer": "Sleipner",
+      "part_number": "20 1180",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+        "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be"
+      ],
+      "notes": "Current Sleipner compatibility page lists 20 1180 for SP155. Inventory quantity intentionally omitted."
+    },
+    {
+      "id": "part_5b29e206-4890-4653-8b6f-7b635edb44d3",
+      "name": "SP155 sacrificial anode — aluminum alloy",
+      "manufacturer": "Sleipner",
+      "part_number": "20 1180A",
+      "unit": "each",
+      "compatible_equipment_ids": [
+        "eq_a9eb50f1-3a10-4065-9f1f-3fbd61d3bf7b",
+        "eq_d8590d5d-5e9a-4ac6-92d9-4ae3d81ec9be"
+      ],
+      "notes": "Current Sleipner anode chart lists 20 1180A as SP155-compatible. Inventory quantity intentionally omitted."
+    }
+  ]
+}
