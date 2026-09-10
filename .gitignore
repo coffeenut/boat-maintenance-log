@@ -2,3 +2,10 @@
 Thumbs.db
 *.tmp
 *.bak
+__pycache__/
+*.pyc
+.venv/
+config.json
+data.zip
+*.lock
+.boat-maintenance-*

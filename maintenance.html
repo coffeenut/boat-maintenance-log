@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Boat Maintenance Log v0.21</title>
+<title>Boat Maintenance Log v0.22</title>
 <style>
 :root{
   --bg:#f5f7f8;--card:#fff;--text:#172026;--muted:#66737d;--line:#d9e0e4;
@@ -115,9 +115,8 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
     <div class="sub" id="datasetStatus">No boat data loaded</div>
   </div>
   <div class="top-actions">
-    <button class="ghost" id="openZipBtn" type="button">Open Data ZIP</button>
-    <input id="importZipInput" type="file" accept=".zip,application/zip" class="hidden">
-    <button class="ghost" id="exportBtn" disabled>Save Data ZIP</button>
+    <button class="ghost hidden" id="retrySaveBtn" type="button">Retry save</button>
+    <button class="ghost" id="refreshBtn" type="button">Refresh</button>
   </div>
 </header>
 
@@ -131,6 +130,7 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
   <div class="nav-divider"></div>
   <div class="nav-group">
     <span class="nav-label">Setup</span>
+    <button data-view="boat">Boat Settings</button>
     <button data-view="equipment">Equipment</button>
     <button data-view="maintenance">Maintenance Schedule</button>
     <button data-view="meters">Hours & Meters</button>
@@ -140,15 +140,8 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 <main>
   <div id="browserNotice" class="notice hidden"></div>
   <div id="noData" class="card">
-    <h2>Open your boat maintenance data</h2>
-    <p>This app keeps your records in ordinary JSON/JSONL files inside one portable ZIP. Nothing is uploaded anywhere.</p>
-    <div class="actions">
-      <button class="primary" id="openZipBtn2" type="button">Open Data ZIP</button>
-      <input id="importZipInput2" type="file" accept=".zip,application/zip" class="hidden">
-    </div>
-    <p class="small muted" style="margin-top:14px">
-      Your maintenance data is a normal ZIP containing readable JSON/JSONL files and attachments. Where supported, saving writes back to the ZIP you opened. On browsers that cannot overwrite it, the app protects the newer browser working copy and warns before opening an older ZIP.
-    </p>
+    <h2>Connecting to your boat</h2>
+    <p id="connectionMessage">Loading maintenance records from the server…</p>
   </div>
 
   <section id="dashboard" class="view hidden"></section>
@@ -157,6 +150,7 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
   <section id="equipment" class="view hidden"></section>
   <section id="maintenance" class="view hidden"></section>
   <section id="meters" class="view hidden"></section>
+  <section id="boat" class="view hidden"></section>
 </main>
 
 <script>
@@ -164,9 +158,6 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 
 /* ---------- application state ---------- */
 const state = {
-  mode: null, // "direct" | "import"
-  rootHandle: null,
-  importedFiles: new Map(), // relative path -> Uint8Array
   files: {},
   dirty: false,
   selectedEquipmentId: null,
@@ -177,9 +168,16 @@ const state = {
   selectedMeterId: null,
   meterEditorMode: null,
   logPrefillTaskId: null,
-  zipFileHandle: null,
-  zipFileName: null,
-  lastSaveMode: null,
+  revision: null,
+  csrfToken: null,
+  generation: 0,
+  saving: false,
+  loading: false,
+  draftDirty: false,
+  saveError: "",
+  connectionError: "",
+  conflict: false,
+  newerData: false,
   dashboardMaintenanceMode: "priority",
   dashboardMaintenanceSearch: "",
   equipmentSearch: "",
@@ -191,27 +189,12 @@ const state = {
   historyEquipmentFilter: "all",
   historyFromDate: "",
   historyToDate: "",
-  lastLoadMigrated: false,
   dashboardExpandedTasks: [],
   scheduleExpandedTasks: []
 };
 
-const requiredPaths = {
-  manifest:"manifest.json",
-  vessel:"data/vessel.json",
-  equipment:"data/equipment.json",
-  meters:"data/meters.json",
-  maintenance_tasks:"data/maintenance_tasks.json",
-  parts:"data/parts.json",
-  parties:"data/parties.json",
-  attachments:"data/attachments.json",
-  service_history:"data/service_history.jsonl",
-  meter_readings:"data/meter_readings.jsonl"
-};
-
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const enc = new TextEncoder(), dec = new TextDecoder();
 
 function uid(prefix){
   if (crypto.randomUUID) return prefix+"_"+crypto.randomUUID();
@@ -246,351 +229,98 @@ function readingFreshness(r){
 function num(v,d=0){ return Number(v).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 
-const DB_NAME="boat-maintenance-local";
-const DB_VERSION=1;
-const STORE_NAME="state";
-const LAST_KEY="lastDataset";
-
-function openLocalDB(){
-  return new Promise((resolve,reject)=>{
-    const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=()=>{ const db=req.result; if(!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME); };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
+/* ---------- server storage ---------- */
+async function requestJSON(method, body){
+  const response=await fetch("/api/data",{
+    method, cache:"no-store", credentials:"same-origin",
+    headers:body?{"Content-Type":"application/json","X-CSRF-Token":state.csrfToken}: {},
+    ...(body?{body:JSON.stringify(body)}:{}),
+    signal:AbortSignal.timeout(20000)
   });
+  const result=await response.json();
+  if(!response.ok){
+    const error=new Error(result.error||"The server could not complete the request.");
+    error.status=response.status;
+    throw error;
+  }
+  return result;
 }
-async function idbSet(key,value){
-  const db=await openLocalDB();
-  await new Promise((resolve,reject)=>{
-    const tx=db.transaction(STORE_NAME,"readwrite");
-    tx.objectStore(STORE_NAME).put(value,key);
-    tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
-  });
-  db.close();
+function storageNotice(){
+  const notice=$("#browserNotice");
+  let message=state.saveError || state.connectionError;
+  if(state.conflict) message="Another device saved changes. Your changes have not been saved. Refresh to load the latest records before editing again.";
+  else if(state.newerData && !message) message="New records are available from another device. Finish your current entry or refresh to load them.";
+  notice.textContent=message;
+  notice.classList.toggle("hidden",!message);
+  $("#retrySaveBtn").classList.toggle("hidden",!state.dirty || state.saving || state.conflict);
+  $("#refreshBtn").disabled=state.saving || state.loading;
+  // A conflicted snapshot must not accept more edits until it is reloaded.
+  $("main").classList.toggle("conflicted",state.conflict);
+  $$("main form button[type=submit]").forEach(button=>button.disabled=state.conflict);
 }
-async function idbGet(key){
-  const db=await openLocalDB();
-  const value=await new Promise((resolve,reject)=>{
-    const tx=db.transaction(STORE_NAME,"readonly");
-    const req=tx.objectStore(STORE_NAME).get(key);
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
-  });
-  db.close(); return value;
-}
-async function cacheWorkingCopy(){
-  if(!state.files?.manifest)return;
-  const core=serializeCoreFiles();
-  const cached={
-    mode:"import",
-    files:[...core.entries()],
-    importedFiles:state.mode==="import"?[...state.importedFiles.entries()].map(([k,v])=>[k,Array.from(v)]):null,
-    savedAt:new Date().toISOString(),
-    dirty:state.dirty,
-    zipFileName:state.zipFileName||null
-  };
-  if(state.zipFileHandle) cached.zipFileHandle=state.zipFileHandle;
+async function loadServer(manual=false){
+  if(state.saving || state.loading)return;
+  if(manual && (state.dirty || state.draftDirty) &&
+     !confirm("Refresh and discard your unsaved changes? The latest server records will be loaded."))return;
+  const generation=state.generation;
+  state.loading=true;
+  storageNotice();
   try{
-    await idbSet(LAST_KEY,cached);
-  }catch(e){
-    // Some browsers cannot structured-clone filesystem handles. Cache everything else.
-    if(cached.zipFileHandle){
-      delete cached.zipFileHandle;
-      try{ await idbSet(LAST_KEY,cached); return; }catch(e2){}
-    }
-    console.warn("Could not cache local state",e);
-  }
-}
-async function restoreCachedDataset(){
-  let cached;
-  try{ cached=await idbGet(LAST_KEY); }catch(e){ return false; }
-  if(!cached || !cached.files)return false;
-  try{
-    const texts=new Map(cached.files);
-    state.mode="import";
-    state.rootHandle=null;
-    state.files=parseLoadedTexts(texts);
-    state.importedFiles=new Map((cached.importedFiles||[]).map(([k,a])=>[k,new Uint8Array(a)]));
-    state.dirty=Boolean(cached.dirty)||Boolean(state.lastLoadMigrated);
-    state.zipFileHandle=cached.zipFileHandle||null;
-    state.zipFileName=cached.zipFileName||null;
-    afterLoad();
-    if(state.dirty){
-      $("#datasetStatus").innerHTML='<span class="status-dot dirty"></span>Restored working copy • save the Data ZIP when finished';
-    }else{
-      $("#datasetStatus").innerHTML='<span class="status-dot live"></span>Restored saved working copy';
-    }
-    return true;
-  }catch(e){
-    console.warn("Cached working copy restore failed",e);
-    return false;
-  }
-}
-
-/* ---------- browser mode ---------- */
-const hasDirectFolder = typeof window.showDirectoryPicker === "function";
-
-/* ---------- file IO ---------- */
-async function getHandleByPath(root, path, create=false){
-  const parts=path.split("/").filter(Boolean);
-  let dir=root;
-  for(let i=0;i<parts.length-1;i++) dir=await dir.getDirectoryHandle(parts[i],{create});
-  return await dir.getFileHandle(parts.at(-1),{create});
-}
-async function readDirectText(path){
-  const h=await getHandleByPath(state.rootHandle,path,false);
-  return await (await h.getFile()).text();
-}
-async function writeDirectText(path,text){
-  const h=await getHandleByPath(state.rootHandle,path,true);
-  const w=await h.createWritable();
-  await w.write(text); await w.close();
-}
-async function collectDirectFiles(dirHandle,prefix="",map=new Map()){
-  for await (const [name,h] of dirHandle.entries()){
-    const path=prefix?prefix+"/"+name:name;
-    if(h.kind==="directory") await collectDirectFiles(h,path,map);
-    else map.set(path,new Uint8Array(await (await h.getFile()).arrayBuffer()));
-  }
-  return map;
-}
-
-function readU16(view,off){return view.getUint16(off,true)}
-function readU32(view,off){return view.getUint32(off,true)}
-
-async function unzipToMap(file){
-  const buf=await file.arrayBuffer();
-  const view=new DataView(buf);
-  const bytes=new Uint8Array(buf);
-
-  // Find end-of-central-directory record by scanning backward.
-  let eocd=-1;
-  const min=Math.max(0,bytes.length-65557);
-  for(let i=bytes.length-22;i>=min;i--){
-    if(readU32(view,i)===0x06054b50){eocd=i;break}
-  }
-  if(eocd<0) throw new Error("ZIP directory not found.");
-
-  const total=readU16(view,eocd+10);
-  const centralOffset=readU32(view,eocd+16);
-  let off=centralOffset;
-  const out=new Map();
-
-  for(let n=0;n<total;n++){
-    if(readU32(view,off)!==0x02014b50) throw new Error("Invalid ZIP central directory.");
-    const method=readU16(view,off+10);
-    const compSize=readU32(view,off+20);
-    const uncompSize=readU32(view,off+24);
-    const nameLen=readU16(view,off+28);
-    const extraLen=readU16(view,off+30);
-    const commentLen=readU16(view,off+32);
-    const localOff=readU32(view,off+42);
-    const name=dec.decode(bytes.slice(off+46,off+46+nameLen));
-
-    if(!name.endsWith("/")){
-      if(readU32(view,localOff)!==0x04034b50) throw new Error("Invalid ZIP local header.");
-      const localNameLen=readU16(view,localOff+26);
-      const localExtraLen=readU16(view,localOff+28);
-      const dataStart=localOff+30+localNameLen+localExtraLen;
-      const compressed=bytes.slice(dataStart,dataStart+compSize);
-
-      let data;
-      if(method===0){
-        data=compressed;
-      }else if(method===8){
-        if(typeof DecompressionStream!=="function")
-          throw new Error("This browser cannot open compressed ZIP files. Re-export from this app or choose the unzipped folder.");
-        const ds=new DecompressionStream("deflate-raw");
-        const stream=new Blob([compressed]).stream().pipeThrough(ds);
-        data=new Uint8Array(await new Response(stream).arrayBuffer());
-      }else{
-        throw new Error("Unsupported ZIP compression method: "+method);
-      }
-      if(uncompSize!==data.length) {
-        // tolerate size mismatch only if browser decompression succeeded; still suspicious
-      }
-      out.set(name,data);
-    }
-    off+=46+nameLen+extraLen+commentLen;
-  }
-  return out;
-}
-
-function normalizeImportedMap(map){
-  // Our exports may include one top-level dataset folder. Strip it if present.
-  if(map.has("manifest.json")) return map;
-  const manifestKeys=[...map.keys()].filter(k=>k.endsWith("/manifest.json"));
-  if(manifestKeys.length===1){
-    const prefix=manifestKeys[0].slice(0,-"manifest.json".length);
-    const normalized=new Map();
-    for(const [k,v] of map){
-      if(k.startsWith(prefix)) normalized.set(k.slice(prefix.length),v);
-    }
-    return normalized;
-  }
-  return map;
-}
-
-async function openDataZip(){
-  if(typeof window.showOpenFilePicker==="function"){
-    try{
-      const handles=await window.showOpenFilePicker({
-        multiple:false,
-        types:[{
-          description:"Boat Maintenance Data ZIP",
-          accept:{"application/zip":[".zip"]}
-        }]
-      });
-      if(!handles?.length)return;
-      const handle=handles[0];
-      const file=await handle.getFile();
-      await importZip(file,handle);
+    const snapshot=await requestJSON("GET");
+    state.csrfToken=snapshot.csrf_token;
+    state.connectionError="";
+    // Do not replace work entered while this read was in flight.
+    if(generation!==state.generation || state.saving)return;
+    if(!manual && (state.dirty || state.draftDirty)){
+      state.newerData=snapshot.revision!==state.revision;
       return;
-    }catch(e){
-      if(e.name==="AbortError")return;
-      console.warn("Native ZIP picker failed; using browser file input.",e);
     }
-  }
-  $("#importZipInput").click();
-}
-
-async function importZip(file,fileHandle=null){
-  if(!file)return;
-  try{
-    let map=await unzipToMap(file);
-    map=normalizeImportedMap(map);
-    const texts=new Map();
-    for(const path of Object.values(requiredPaths)){
-      if(!map.has(path)) throw new Error("Missing "+path);
-      texts.set(path,dec.decode(map.get(path)));
+    if(!manual && state.revision===snapshot.revision)return;
+    state.files=snapshot.files;
+    state.revision=snapshot.revision;
+    state.dirty=false;state.draftDirty=false;state.saveError="";state.conflict=false;state.newerData=false;
+    if(manual){
+      state.selectedEquipmentId=null;state.equipmentEditorOpen=false;
+      state.selectedTaskId=null;state.taskEditorOpen=false;
+      state.selectedMeterId=null;state.meterEditorOpen=false;state.logPrefillTaskId=null;
     }
-    const incoming=parseLoadedTexts(texts);
-
-    // Protect a newer browser working copy from being silently replaced by an older ZIP.
-    const currentManifest=state.files?.manifest;
-    const incomingManifest=incoming.manifest;
-    if(currentManifest?.dataset_id && currentManifest.dataset_id===incomingManifest?.dataset_id){
-      const currentTime=Date.parse(currentManifest.modified_at||"");
-      const incomingTime=Date.parse(incomingManifest.modified_at||"");
-      if(Number.isFinite(currentTime) && Number.isFinite(incomingTime) && incomingTime<currentTime){
-        const currentLabel=new Date(currentTime).toLocaleString();
-        const incomingLabel=new Date(incomingTime).toLocaleString();
-        const ok=confirm(
-          "This ZIP is older than your current working copy.\n\n"+
-          "Selected ZIP: "+incomingLabel+"\n"+
-          "Current working copy: "+currentLabel+"\n\n"+
-          "Opening the older ZIP would replace the newer working copy in this browser. Continue?"
-        );
-        if(!ok)return;
-      }
-    }
-
-    state.mode="import";
-    state.rootHandle=null;
-    state.importedFiles=map;
-    state.files=incoming;
-    state.dirty=Boolean(state.lastLoadMigrated);
-    state.zipFileHandle=fileHandle||null;
-    state.zipFileName=file.name||null;
-    state.lastSaveMode=null;
-    afterLoad();
-    await cacheWorkingCopy();
-  }catch(e){
-    alert("Could not import that ZIP.\n\n"+e.message);
+    if($("#noData").classList.contains("hidden")) renderAll();
+    else afterLoad();
+  }catch(error){
+    state.connectionError="Cannot reach the server. Keep this page open if you have unsaved changes, then try again.";
+    $("#connectionMessage").textContent=location.protocol==="file:"?
+      "Open this app using your Pi’s HTTPS address. It only runs through the server.":
+      "Unable to load server data. Check that the Pi is running, then select Refresh.";
+  }finally{
+    state.loading=false;updateHeader();storageNotice();
   }
-}
-
-function parseJSONL(text){return text.split(/\r?\n/).filter(x=>x.trim()).map(x=>JSON.parse(x))}
-function stringifyJSONL(arr){return arr.map(x=>JSON.stringify(x)).join("\n")+"\n"}
-function parseLoadedTexts(texts){
-  const f={};
-  f.manifest=JSON.parse(texts.get(requiredPaths.manifest));
-  f.vessel=JSON.parse(texts.get(requiredPaths.vessel));
-  f.equipment=JSON.parse(texts.get(requiredPaths.equipment));
-  f.meters=JSON.parse(texts.get(requiredPaths.meters));
-  f.maintenance_tasks=JSON.parse(texts.get(requiredPaths.maintenance_tasks));
-  f.parts=JSON.parse(texts.get(requiredPaths.parts));
-  f.parties=JSON.parse(texts.get(requiredPaths.parties));
-  f.attachments=JSON.parse(texts.get(requiredPaths.attachments));
-  f.service_history=parseJSONL(texts.get(requiredPaths.service_history)||"");
-  f.meter_readings=parseJSONL(texts.get(requiredPaths.meter_readings)||"");
-
-  let migrated=false;
-  // v1.2 removes financial/time-accounting fields from service history.
-  f.service_history.forEach(ev=>{
-    if(Object.prototype.hasOwnProperty.call(ev,"cost")){delete ev.cost;migrated=true}
-    if(Object.prototype.hasOwnProperty.call(ev,"labor_hours")){delete ev.labor_hours;migrated=true}
-  });
-
-  const targetSchema="1.2.0";
-  if(f.manifest.schema_version!==targetSchema){
-    f.manifest.schema_version=targetSchema;
-    migrated=true;
-  }
-  [f.vessel,f.equipment,f.meters,f.maintenance_tasks,f.parts,f.parties,f.attachments].forEach(doc=>{
-    if(doc && doc.schema_version && doc.schema_version!==targetSchema){doc.schema_version=targetSchema;migrated=true}
-    (doc?.records||[]).forEach(rec=>{
-      if(rec.schema_version && rec.schema_version!==targetSchema){rec.schema_version=targetSchema;migrated=true}
-    });
-  });
-  [...f.service_history,...f.meter_readings].forEach(rec=>{
-    if(rec.schema_version!==targetSchema){rec.schema_version=targetSchema;migrated=true}
-  });
-  state.lastLoadMigrated=migrated;
-  return f;
-}
-function serializeCoreFiles(){
-  const map=new Map();
-  map.set(requiredPaths.manifest,JSON.stringify(state.files.manifest,null,2)+"\n");
-  ["vessel","equipment","meters","maintenance_tasks","parts","parties","attachments"].forEach(k=>{
-    map.set(requiredPaths[k],JSON.stringify(state.files[k],null,2)+"\n");
-  });
-  map.set(requiredPaths.service_history,stringifyJSONL(state.files.service_history));
-  map.set(requiredPaths.meter_readings,stringifyJSONL(state.files.meter_readings));
-  return map;
-}
-async function openDirectFolder(){
-  try{
-    const handle=await window.showDirectoryPicker({mode:"readwrite"});
-    state.rootHandle=handle; state.mode="direct";
-    const texts=new Map();
-    for(const path of Object.values(requiredPaths)) texts.set(path,await readDirectText(path));
-    state.files=parseLoadedTexts(texts);
-    state.importedFiles=new Map();
-    state.dirty=Boolean(state.lastLoadMigrated); afterLoad(); await cacheWorkingCopy();
-  }catch(e){
-    if(e.name!=="AbortError") alert("Could not open that folder.\n\nChoose the dataset folder that contains manifest.json.\n\n"+e.message);
-  }
-}
-async function importFolder(fileList){
-  const map=new Map();
-  for(const file of [...fileList]){
-    const rel=(file.webkitRelativePath||file.name).replace(/^[^/]+\//,"");
-    map.set(rel,new Uint8Array(await file.arrayBuffer()));
-  }
-  const texts=new Map();
-  try{
-    for(const path of Object.values(requiredPaths)){
-      if(!map.has(path)) throw new Error("Missing "+path);
-      texts.set(path,dec.decode(map.get(path)));
-    }
-    state.mode="import"; state.rootHandle=null; state.importedFiles=map;
-    state.files=parseLoadedTexts(texts); state.dirty=Boolean(state.lastLoadMigrated); afterLoad(); await cacheWorkingCopy();
-  }catch(e){ alert("That does not look like a Boat Maintenance Data folder.\n\n"+e.message); }
 }
 async function persistAll(){
-  if(!state.files.manifest)return;
-  state.files.manifest.modified_at=new Date().toISOString();
-  if(state.mode==="direct"){
-    const core=serializeCoreFiles();
-    for(const [path,text] of core) await writeDirectText(path,text);
-    state.dirty=false; updateHeader();
-  }else{
-    state.dirty=true; updateHeader();
+  if(state.saving || state.conflict || !state.dirty)return;
+  state.saving=true;state.saveError="";
+  updateHeader();storageNotice();
+  try{
+    while(state.dirty){
+      const generation=state.generation;
+      const files=clone(state.files);
+      const result=await requestJSON("PUT",{revision:state.revision,files});
+      state.revision=result.revision;
+      state.connectionError="";state.newerData=false;
+      if(generation===state.generation)state.dirty=false;
+    }
+  }catch(error){
+    state.conflict=error.status===409;
+    state.saveError=error.status===422?error.message:
+      "Changes have not been confirmed saved. Keep this page open and select Retry save when the server is available.";
+  }finally{
+    state.saving=false;updateHeader();storageNotice();
   }
-  await cacheWorkingCopy();
 }
-function markChanged(){ state.dirty=true; persistAll().catch(e=>alert("Save failed: "+e.message)); }
+function markChanged(){
+  state.files.manifest.modified_at=new Date().toISOString();
+  state.generation++;state.dirty=true;state.draftDirty=false;
+  persistAll();
+}
 
 /* ---------- maintenance logic ---------- */
 function equipmentById(id){return state.files.equipment.records.find(x=>x.id===id)}
@@ -879,21 +609,15 @@ function afterLoad(){
   $$(".view").forEach(x=>x.classList.add("hidden"));
   $("#dashboard").classList.remove("hidden");
   $$("nav button").forEach(x=>x.classList.toggle("active",x.dataset.view==="dashboard"));
-  $("#exportBtn").disabled=false;
   updateHeader(); renderAll();
 }
 function updateHeader(){
   if(!state.files.vessel){$("#datasetStatus").textContent="No boat data loaded";return}
   const v=state.files.vessel.record;
   $("#appTitle").textContent=v.name ? v.name+" Maintenance" : "Boat Maintenance Log";
-  const fileLabel=state.zipFileName?state.zipFileName:"Data ZIP";
-  const dirty=state.dirty?" • unsaved changes":"";
-  const saveNote=state.lastSaveMode==="download"?" • last save downloaded a new copy":"";
-  $("#datasetStatus").innerHTML=`<span class="status-dot ${state.dirty?"dirty":"live"}"></span>${esc(fileLabel)}${dirty}${saveNote}`;
-  if($("#exportBtn")){
-    $("#exportBtn").textContent = state.zipFileHandle ? "Save Data ZIP" :
-      (typeof window.showSaveFilePicker==="function" ? "Save Data ZIP…" : "Download Data ZIP");
-  }
+  const label=state.saving?"Saving to server…":state.dirty?"Changes not saved":
+    state.connectionError?"Server unavailable":"All changes saved on server";
+  $("#datasetStatus").innerHTML=`<span class="status-dot ${state.dirty || state.connectionError?"dirty":"live"}"></span>${esc(label)}`;
 }
 function showView(name){
   if(!state.files.vessel)return;
@@ -907,7 +631,37 @@ function startLogForTask(taskId){
   showView("log");
   setTimeout(()=>$("#logForm")?.scrollIntoView({behavior:"smooth",block:"start"}),0);
 }
-function renderAll(){renderDashboard();renderLog();renderHistory();renderEquipment();renderMaintenance();renderMeters();}
+function renderAll(){renderDashboard();renderLog();renderHistory();renderEquipment();renderMaintenance();renderMeters();renderBoat();storageNotice();}
+
+function renderBoat(){
+  const vessel=state.files.vessel.record;
+  const hull=(vessel.identifiers||[]).find(item=>item.type==="hull_number")?.value||"";
+  $("#boat").innerHTML=`<div class="grid"><div class="card span-8">
+    <h2>Boat settings</h2>
+    <p class="muted">Your boat’s details appear on every device using this server.</p>
+    <form id="boatForm"><div class="row">
+      <div class="field"><label>Boat name</label><input name="name" required maxlength="200" value="${esc(vessel.name)}"></div>
+      <div class="field"><label>Boat type</label><input name="vessel_type" placeholder="Trawler, sailboat, powerboat…" value="${esc(vessel.vessel_type)}"></div>
+      <div class="field"><label>Builder</label><input name="builder" value="${esc(vessel.builder)}"></div>
+      <div class="field"><label>Model</label><input name="model" value="${esc(vessel.model)}"></div>
+      <div class="field third"><label>Year</label><input name="year" type="number" min="1800" max="2200" step="1" value="${esc(vessel.year??"")}"></div>
+      <div class="field"><label>Hull number</label><input name="hull_number" value="${esc(hull)}"></div>
+      <div class="field full"><label>Notes</label><textarea name="notes">${esc(vessel.notes)}</textarea></div>
+    </div><button class="primary" type="submit">Save boat settings</button></form>
+  </div></div>`;
+  $("#boatForm").addEventListener("submit",e=>{
+    e.preventDefault();const fd=new FormData(e.target);
+    const name=String(fd.get("name")||"").trim();
+    if(!name){alert("Enter your boat’s name.");return;}
+    vessel.name=name;
+    for(const key of ["vessel_type","builder","model","notes"])vessel[key]=String(fd.get(key)||"").trim();
+    vessel.year=fd.get("year")===""?null:Number(fd.get("year"));
+    vessel.identifiers=(vessel.identifiers||[]).filter(item=>item.type!=="hull_number");
+    const number=String(fd.get("hull_number")||"").trim();
+    if(number)vessel.identifiers.push({type:"hull_number",value:number});
+    markChanged();updateHeader();renderAll();
+  });
+}
 
 function renderDashboard(){
   let statuses=state.files.maintenance_tasks.records
@@ -1413,10 +1167,10 @@ function renderMaintenance(){
   $("#taskKind")?.addEventListener("change",e=>{$("#recurringFields").classList.toggle("hidden",e.target.value!=="recurring");$("#oneTimeFields").classList.toggle("hidden",e.target.value==="recurring")});
   $("#taskForm")?.addEventListener("submit",e=>{
     e.preventDefault();const fd=new FormData(e.target);let rec=taskById(fd.get("id"));
+    if(rec)rec=clone(rec);
     const eqid=fd.get("equipment_id"), kind=fd.get("task_kind");
     if(!rec){
       rec={id:uid("task"),equipment_id:eqid,title:"",category:null,active:true,task_kind:kind,schedule:{logic:"any",triggers:[]},baseline:{date:todayISO(),meter_values:[]},procedure:"",source:{type:"owner_program",reference:""},tags:[],notes:""};
-      state.files.maintenance_tasks.records.push(rec);
     }
     rec.equipment_id=eqid;rec.title=fd.get("title");rec.category=fd.get("category")||null;rec.active=fd.get("active")==="on";rec.task_kind=kind;rec.procedure=fd.get("procedure")||"";
     const trs=[];
@@ -1442,6 +1196,9 @@ function renderMaintenance(){
       trs.push({type:"date",due_date:d,warning:{value:14,unit:"days"}});
     }
     rec.schedule={logic:"any",triggers:trs};
+    const taskIndex=state.files.maintenance_tasks.records.findIndex(t=>t.id===rec.id);
+    if(taskIndex<0)state.files.maintenance_tasks.records.push(rec);
+    else state.files.maintenance_tasks.records[taskIndex]=rec;
     state.selectedTaskId=null;state.taskEditorOpen=false;markChanged();renderAll();
   });
 }
@@ -1495,7 +1252,7 @@ function renderLog(){
     state.files.service_history.push(sv);
     if(meter&&meterVal!==null) state.files.meter_readings.push({record_type:"meter_reading",schema_version:state.files.manifest.schema_version,id:uid("read"),meter_id:meter.id,observed_at:date,value:meterVal,displayed_value:meterVal,unit:meter.unit,source:"service_event",service_event_id:sv.id,quality:"exact",event:"observation",notes:""});
     state.logPrefillTaskId=null;
-    markChanged();renderAll();alert("Maintenance logged.");
+    markChanged();renderAll();
   };
 }
 
@@ -1672,116 +1429,30 @@ function renderMeters(){
   });
 }
 
-/* ---------- ZIP writer (store/no compression) ---------- */
-const crcTable=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
-function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=crcTable[(c^b)&255]^(c>>>8);return (c^0xffffffff)>>>0}
-function u16(n){return [n&255,(n>>>8)&255]}function u32(n){return [n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255]}
-function makeZip(fileMap){
-  const chunks=[],central=[];let offset=0;
-  for(const [name,data0] of fileMap){
-    const nameB=enc.encode(name),data=data0 instanceof Uint8Array?data0:enc.encode(String(data0)),crc=crc32(data);
-    const local=new Uint8Array([0x50,0x4b,0x03,0x04,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0)]);
-    chunks.push(local,nameB,data);
-    const cen=new Uint8Array([0x50,0x4b,0x01,0x02,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(nameB.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset)]);
-    central.push(cen,nameB);offset+=local.length+nameB.length+data.length;
-  }
-  const centralSize=central.reduce((a,b)=>a+b.length,0),count=fileMap.size;
-  const end=new Uint8Array([0x50,0x4b,0x05,0x06,...u16(0),...u16(0),...u16(count),...u16(count),...u32(centralSize),...u32(offset),...u16(0)]);
-  return new Blob([...chunks,...central,end],{type:"application/zip"});
-}
-async function exportZip(){
-  let files=new Map();
-  for(const [k,v] of state.importedFiles) files.set(k,v);
-  for(const [path,text] of serializeCoreFiles()) files.set(path,enc.encode(text));
-  const blob=makeZip(files);
-  const vessel=(state.files.vessel.record.name||"boat").replace(/[^a-z0-9_-]+/gi,"-").replace(/^-|-$/g,"");
-  const suggestedName=state.zipFileName || `${vessel}-maintenance-data.zip`;
-
-  // Best case: write back to the exact ZIP the user opened.
-  if(state.zipFileHandle && typeof state.zipFileHandle.createWritable==="function"){
-    try{
-      let perm="granted";
-      if(state.zipFileHandle.queryPermission) perm=await state.zipFileHandle.queryPermission({mode:"readwrite"});
-      if(perm!=="granted" && state.zipFileHandle.requestPermission)
-        perm=await state.zipFileHandle.requestPermission({mode:"readwrite"});
-      if(perm==="granted"){
-        const writable=await state.zipFileHandle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        state.importedFiles=files;
-        state.dirty=false;
-        state.lastSaveMode="same-file";
-        updateHeader();
-        await cacheWorkingCopy();
-        return;
-      }
-    }catch(e){
-      console.warn("Could not overwrite original ZIP; trying Save As.",e);
-    }
-  }
-
-  // Chromium-style Save As: choose a location once, then retain that writable handle.
-  if(typeof window.showSaveFilePicker==="function"){
-    try{
-      const handle=await window.showSaveFilePicker({
-        suggestedName,
-        types:[{
-          description:"Boat Maintenance Data ZIP",
-          accept:{"application/zip":[".zip"]}
-        }]
-      });
-      const writable=await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-      state.zipFileHandle=handle;
-      state.zipFileName=handle.name||suggestedName;
-      state.importedFiles=files;
-      state.dirty=false;
-      state.lastSaveMode="same-file";
-      updateHeader();
-      await cacheWorkingCopy();
-      return;
-    }catch(e){
-      if(e.name==="AbortError")return;
-      console.warn("Save As failed; falling back to download.",e);
-    }
-  }
-
-  // Safari/Firefox fallback: browsers do not permit arbitrary overwrite of the selected source file.
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=suggestedName;
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  state.importedFiles=files;
-  state.dirty=false;
-  state.lastSaveMode="download";
-  updateHeader();
-  await cacheWorkingCopy();
-  alert(
-    "Your browser saved an updated ZIP as a download because it cannot write back to the ZIP you opened.\\n\\n"+
-    "This app will keep the newer working copy in the browser and will warn you if you later try to open an older ZIP of this same boat."
-  );
-}
-
 /* ---------- events ---------- */
-$("#openZipBtn").onclick=openDataZip;
-$("#openZipBtn2").onclick=openDataZip;
-$("#importZipInput").onchange=e=>importZip(e.target.files[0],null);
-$("#importZipInput2").onchange=e=>importZip(e.target.files[0],null);
-$("#exportBtn").onclick=()=>exportZip().catch(e=>alert("Save failed: "+e.message));
+$("#refreshBtn").onclick=()=>loadServer(true);
+$("#retrySaveBtn").onclick=async()=>{await loadServer();await persistAll()};
 $$("nav button").forEach(b=>b.onclick=()=>{
   if(!state.files.vessel)return;
   if(b.dataset.view==="log"){state.logPrefillTaskId=null;renderLog();}
   showView(b.dataset.view);
 });
-
-restoreCachedDataset().catch(e=>console.warn("Restore failed",e));
+$("main").addEventListener("input",e=>{
+  if(e.target.closest("form")){state.draftDirty=true;state.generation++;}
+});
+$("main").addEventListener("change",e=>{
+  if(e.target.closest("form")){state.draftDirty=true;state.generation++;}
+});
+// Block form submissions from a conflicted snapshot, including Enter-key submits.
+$("main").addEventListener("submit",e=>{
+  if(state.conflict){e.preventDefault();e.stopImmediatePropagation();storageNotice();}
+},true);
+loadServer();
+setInterval(()=>{if(!document.hidden)loadServer()},15000);
+window.addEventListener("focus",()=>loadServer());
+window.addEventListener("online",async()=>{await loadServer();await persistAll()});
 window.addEventListener("beforeunload",e=>{
-  if(state.dirty){
-    e.preventDefault();
-    e.returnValue="";
-  }
+  if(state.dirty || state.draftDirty){e.preventDefault();e.returnValue="";}
 });
 </script>
 </body>
